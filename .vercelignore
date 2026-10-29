@@ -1,0 +1,4 @@
+art/source/
+test-results/
+playwright-report/
+.git/
