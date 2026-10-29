@@ -58,7 +58,6 @@ export function World({
             <span>{p.name}</span>
           </button>
         ))}
-      <span className="world-caption">A small beginning. A world to grow.</span>
     </div>
   );
 }

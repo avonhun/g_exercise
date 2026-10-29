@@ -28,21 +28,13 @@ import {
 } from "./engine";
 import { backup, download, load, persist, recovery, restore } from "./store";
 import { World, Portrait } from "./World";
+import { Icon } from "./Icon";
+import "@fontsource/bitter/latin-600.css";
+import "@fontsource/bitter/latin-700.css";
+import "@fontsource/barlow/latin-400.css";
+import "@fontsource/barlow/latin-600.css";
 import "./style.css";
 const initial = load();
-const icons: Record<string, string> = {
-  wood: "♜",
-  stone: "◆",
-  ore: "⬡",
-  momentum: "✦",
-  food: "❧",
-  herbs: "✿",
-  planks: "▤",
-  fittings: "⚒",
-  rations: "◈",
-  gold: "◉",
-  discovery: "⌖",
-};
 function bag(b: Bag) {
   return Object.entries(b)
     .filter(([, v]) => v)
@@ -204,10 +196,12 @@ function App() {
             setTab("village");
           }}
         >
-          <span className="brand-icon">✧</span>
+          <span className="brand-icon">
+            <Icon name="crest" />
+          </span>
           <span>
             THE LIVING WORLD
-            <small>A life well lived. A world well grown.</small>
+            <small>A chronicle of small beginnings</small>
           </span>
         </a>
         <button
@@ -215,17 +209,17 @@ function App() {
           aria-label="Open settings"
           onClick={() => setTab("settings")}
         >
-          ⚙
+          <Icon name="settings" />
         </button>
       </header>
       <main>
         <section className="chapter">
-          <span className="eyebrow">YOUR CORNER OF THE WORLD</span>
+          <span className="eyebrow">SETTLEMENT No. 01</span>
           <h1>
             Greenhaven Valley<span>Chapter I · Taking root</span>
           </h1>
           <div className="weather">
-            ☀ <span>A gentle day in the valley</span>
+            <Icon name="sun" /> <span>Clear skies</span>
           </div>
         </section>
         {storageError && (
@@ -254,7 +248,9 @@ function App() {
             )
             .map((r) => (
               <div key={r}>
-                <span className={"resource-icon " + r}>{icons[r]}</span>
+                <span className={"resource-icon " + r}>
+                  <Icon name={r} />
+                </span>
                 <strong>{Math.floor(save.inventory[r])}</strong>
                 <small>{r}</small>
               </div>
@@ -264,10 +260,6 @@ function App() {
           <>
             <div className="village-layout">
               <section className="map-panel">
-                <div className="map-label">
-                  <span>⌖ GREENHAVEN</span>
-                  <span>Settled & growing</span>
-                </div>
                 <World
                   save={save}
                   onSelect={(id) => {
@@ -309,14 +301,14 @@ function App() {
                   place its life.
                 </p>
                 <button className="primary" onClick={() => openLogger()}>
-                  ✦ Record an accomplishment
+                  Record an accomplishment
                 </button>
                 <small className="gentle">Small steps count here, too.</small>
               </aside>
             </div>
             <section className="section-heading">
               <div>
-                <span className="eyebrow">A LITTLE PURPOSE FOR TODAY</span>
+                <span className="eyebrow">THE VILLAGE LEDGER</span>
                 <h2>Make yourself at home</h2>
               </div>
               <span className="subtle">At your own pace</span>
@@ -341,7 +333,7 @@ function App() {
                     <div className="requirements">
                       {requirements(save, id).length
                         ? requirements(save, id).join(" · ")
-                        : "✓ Accomplishments earned"}
+                        : "Accomplishments earned"}
                     </div>
                     <small>{bag(b.cost)}</small>
                     <button
@@ -353,7 +345,8 @@ function App() {
                       }
                       disabled={requirements(save, id).length > 0}
                     >
-                      Build {b.name.toLowerCase()} <span>↗</span>
+                      Build {b.name.toLowerCase()}{" "}
+                      <Icon name="arrow" className="action-arrow" />
                     </button>
                   </article>
                 ))}
@@ -425,7 +418,7 @@ function App() {
                   <p>
                     {bag(r.input)}
                     <br />
-                    <span className="craft-arrow">↓</span>
+                    <Icon name="down" className="craft-arrow" />
                     <br />
                     {bag(r.output)}
                   </p>
@@ -540,7 +533,8 @@ function App() {
               {Object.keys(save.credentials).length ? (
                 Object.keys(save.credentials).map((k) => (
                   <span key={k}>
-                    ✧ {activityNames[k.split(":")[0] as Activity]} ·{" "}
+                    <Icon name="crest" />{" "}
+                    {activityNames[k.split(":")[0] as Activity]} ·{" "}
                     {k.split(":")[1] === "weeks3" ? "3 weeks" : k.split(":")[1]}
                   </span>
                 ))
@@ -627,7 +621,7 @@ function App() {
                     }
                   >
                     {save.orders.includes(o.id)
-                      ? "✓ Delivered"
+                      ? "Delivered"
                       : "Deliver supplies"}
                   </button>
                 </article>
@@ -666,7 +660,7 @@ function App() {
               {resources.map((r) => (
                 <article className="habit" key={r}>
                   <span>
-                    {icons[r]} {r}
+                    <Icon name={r} /> {r}
                   </span>
                   <strong>{Math.floor(save.inventory[r] * 10) / 10}</strong>
                   {!!save.debt[r] && (
@@ -970,22 +964,22 @@ function App() {
           </section>
         )}
         <footer>
-          <span>✧ Progress takes root. It never disappears.</span>
+          <span>Progress takes root. It never disappears.</span>
           <small>
             {storageError
               ? "Save needs attention"
               : `On-device save · ${saved || "active"}`}{" "}
-            · v0.2
+            · v0.3
           </small>
         </footer>
       </main>
       <nav className="bottom-nav" aria-label="Main navigation">
         {[
-          ["village", "⌂", "Village"],
-          ["workshops", "⚒", "Workshops"],
-          ["requests", "▧", "Requests"],
-          ["journal", "✎", "Journal"],
-          ["stores", "▣", "Stores"],
+          ["village", "village", "Village"],
+          ["workshops", "workshops", "Workshops"],
+          ["requests", "requests", "Requests"],
+          ["journal", "journal", "Journal"],
+          ["stores", "stores", "Stores"],
         ].map(([id, icon, name]) => (
           <button
             key={id}
@@ -994,7 +988,7 @@ function App() {
             className={tab === id ? "active" : ""}
             onClick={() => setTab(id)}
           >
-            <span>{icon}</span>
+            <Icon name={icon} />
             {name}
           </button>
         ))}
@@ -1117,7 +1111,7 @@ function App() {
                 day. {bag(save.rules.activities[type].reward)}.
               </p>
               <button className="primary" type="submit">
-                Let it grow ↗
+                Let it grow <Icon name="arrow" className="action-arrow" />
               </button>
             </form>
           </section>

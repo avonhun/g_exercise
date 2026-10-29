@@ -176,3 +176,34 @@ test("stale tab cannot overwrite a newer world", async ({ page, context }) => {
   );
   expect(current.logs).toHaveLength(1);
 });
+
+test("village fills phone width without horizontal overflow", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  for (const width of [320, 375, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    const box = await page.locator(".world-landscape").boundingBox();
+    expect(box).not.toBeNull();
+    expect(Math.abs(box!.x)).toBeLessThan(1);
+    expect(Math.abs(box!.width - width)).toBeLessThan(1);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.getByRole("button", { name: "Workshops", exact: true }).click();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Open settings" }).click();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
