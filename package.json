@@ -11,9 +11,10 @@
     "test:e2e": "npm run build && playwright test",
     "art:prepare": "node scripts/prepare-art.mjs",
     "db:migrate": "tsx scripts/migrate-db.ts",
-    "preview:accounts": "LOCAL_DATABASE_PATH=/tmp/living-world-preview.sqlite APP_ORIGIN=http://127.0.0.1:4173 tsx server/start.ts",
+    "preview:accounts": "VITE_ENABLE_ACCOUNTS=true npm run build && ENABLE_ACCOUNTS=true LOCAL_DATABASE_PATH=/tmp/living-world-preview.sqlite APP_ORIGIN=http://127.0.0.1:4173 tsx server/start.ts",
     "start": "tsx server/start.ts",
-    "test:accounts": "npm run build && playwright test -c playwright.accounts.config.ts"
+    "test:accounts": "VITE_ENABLE_ACCOUNTS=true npm run build && playwright test -c playwright.accounts.config.ts",
+    "test:guest": "npm run build && playwright test -c playwright.guest.config.ts"
   },
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",

@@ -2,6 +2,12 @@
 
 Accounts are implemented but **not deployed**. The live site remains the previously published static Vercel app. No Render service, database, billing plan or DNS record has been created by this task.
 
+## Paused by default
+
+The normal game has no login button, account API calls or sign-in cookies. Guest saves and existing account caches are retained separately; pausing does not delete either. Default production startup works with no database or application-origin secret, and account endpoints return 404 without touching storage. `render.yaml` no longer requests database credentials or provisions any database. The existing Vercel static deployment is sufficient for this guest-only release, so Render/database setup can stay paused.
+
+To resume the preserved implementation, explicitly set **both** `VITE_ENABLE_ACCOUNTS=true` for the browser build and `ENABLE_ACCOUNTS=true` for the server, then rebuild and configure the durable database/origin prerequisites described below. `npm run preview:accounts` and `npm run test:accounts` opt in automatically for isolated local checks; a normal `npm run build` turns the UI off again. `npm run test:guest` verifies real production startup and local saves with no database, no cookies, and no account requests.
+
 ## What works locally
 
 - Username/password registration and sign-in; usernames are case-insensitive, 3–30 letters/digits/underscores. Passwords are 12–128 characters, scrypt-hashed with random salts. Passwords and raw session tokens are never saved to logs or browser storage.

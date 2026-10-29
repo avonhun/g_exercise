@@ -3,14 +3,15 @@ import { readFile, stat } from "node:fs/promises";
 import { resolve, extname } from "node:path";
 import { accountHttp } from "./http";
 import { database, initialize } from "./database";
+import { accountsEnabled } from "./features";
 const root = resolve("dist");
-if (process.env.NODE_ENV === "production") {
+if (accountsEnabled() && process.env.NODE_ENV === "production") {
   if (!process.env.DATABASE_URL)
     throw Error("DATABASE_URL must point to durable Postgres storage");
   if (!process.env.APP_ORIGIN?.startsWith("https://"))
     throw Error("APP_ORIGIN must be your HTTPS application origin");
 }
-await initialize(await database());
+if (accountsEnabled()) await initialize(await database());
 const security = {
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "no-referrer",
@@ -35,7 +36,7 @@ createServer(async (req, res) => {
   if (req.url?.startsWith("/api/account")) return accountHttp(req, res);
   if (req.url === "/healthz") {
     try {
-      await (await database()).query("SELECT 1");
+      if (accountsEnabled()) await (await database()).query("SELECT 1");
       res.end("ok");
     } catch {
       res.statusCode = 503;

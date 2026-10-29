@@ -1,6 +1,6 @@
 # The Living World
 
-**Current working changes add accounts and Render hosting; these are not deployed.** See [ACCOUNTS_AND_RENDER.md](ACCOUNTS_AND_RENDER.md) for the functional preview, privacy/storage model, missing account-recovery features, and production prerequisites. The local-only statements below describe guest mode and the already released static version.
+**Accounts and cloud saves are paused.** The default build has no login UI or account requests and needs no database. Progress stays in each browser, with export/import backups. The account/server implementation is retained behind opt-in flags; see [ACCOUNTS_AND_RENDER.md](ACCOUNTS_AND_RENDER.md) to resume it later. Existing Vercel static hosting remains sufficient.
 
 An iPhone-first, local-first civilization game. Your real activities earn supplies and permanent accomplishments; workshops and villagers keep working between workouts. No account, backend, paid APIs, analytics endpoints, or monetization.
 

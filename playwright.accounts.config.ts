@@ -8,6 +8,7 @@ export default defineConfig({
     url: "http://127.0.0.1:4173",
     reuseExistingServer: false,
     env: {
+      ENABLE_ACCOUNTS: "true",
       LOCAL_DATABASE_PATH: `/tmp/living-world-test-${Date.now()}.sqlite`,
       APP_ORIGIN: "http://127.0.0.1:4173",
       PORT: "4173",

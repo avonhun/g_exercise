@@ -1,12 +1,18 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { database, initialize, type Database } from "./database";
 import { accountService } from "./accounts";
+import { accountsEnabled } from "./features";
 let connection: Promise<Database> | undefined;
 export async function accountHttp(req: IncomingMessage, res: ServerResponse) {
   res.setHeader("Cache-Control", "no-store, private");
   res.setHeader("Vary", "Cookie");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("X-Content-Type-Options", "nosniff");
+  if (!accountsEnabled()) {
+    res.statusCode = 404;
+    res.end(JSON.stringify({ error: "Accounts are disabled" }));
+    return;
+  }
   try {
     const secure =
       Boolean(process.env.VERCEL) || process.env.NODE_ENV === "production";

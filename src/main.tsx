@@ -46,6 +46,7 @@ import "@fontsource/barlow/latin-400.css";
 import "@fontsource/barlow/latin-600.css";
 import "./style.css";
 import { AccountShell } from "./AccountShell";
+const accountsEnabled = import.meta.env.VITE_ENABLE_ACCOUNTS === "true";
 function bag(b: Bag) {
   return Object.entries(b)
     .filter(([, v]) => v)
@@ -769,11 +770,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
             <span className="eyebrow">YOUR WORLD, IN YOUR HANDS</span>
             <h2>Save & settings</h2>
             <p>
-              Guest worlds stay in this browser. Signed-in worlds also sync
-              privately to your account. Browser data can be cleared or evicted:
-              keep a downloaded backup. Your account world includes your
-              activity and meal logs. We use an essential sign-in cookie, with
-              no advertising or analytics cookies.
+              {accountsEnabled
+                ? "Guest worlds stay in this browser. Signed-in worlds sync privately to your account, including activity and meal logs. An essential cookie keeps you signed in. There are no advertising or analytics cookies."
+                : "Your world and activity history are saved only in this browser on this device. No account or sign-in cookie is needed. Keep a downloaded backup: clearing browser data can remove your save."}
             </p>
             <div className="button-group">
               <button onClick={exportSave}>Export world</button>
@@ -1224,9 +1223,15 @@ function localTime() {
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AccountShell
-      renderGame={(control, key) => <App key={key} accountControl={control} />}
-    />
+    {accountsEnabled ? (
+      <AccountShell
+        renderGame={(control, key) => (
+          <App key={key} accountControl={control} />
+        )}
+      />
+    ) : (
+      <App accountControl={null} />
+    )}
   </React.StrictMode>,
 );
 if (import.meta.env.PROD && "serviceWorker" in navigator)

@@ -1,4 +1,4 @@
-# Review in Render before creating resources. Does not provision a paid database.
+# Optional free web hosting. Accounts are paused; no database is provisioned.
 services:
   - type: web
     name: living-world
@@ -13,7 +13,7 @@ services:
         value: "24"
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
-        sync: false
-      - key: APP_ORIGIN
-        sync: false
+      - key: ENABLE_ACCOUNTS
+        value: "false"
+      - key: VITE_ENABLE_ACCOUNTS
+        value: "false"
