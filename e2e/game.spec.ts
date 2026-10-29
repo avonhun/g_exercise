@@ -28,7 +28,7 @@ test("mobile activity, building, crafting, correction, saves and console", async
   await expect(page.getByRole("status")).toContainText("5 wood");
   await page.getByRole("button", { name: "Dismiss message" }).click();
   await page.getByRole("button", { name: "Build sawmill" }).click();
-  await expect(page.getByRole("status")).toContainText("construction queued");
+  await expect(page.getByRole("status")).toContainText("construction started");
   await page.getByRole("button", { name: "Dismiss message" }).click();
   await expect(
     page.getByRole("img", { name: "Building Sawmill", exact: true }),
@@ -409,4 +409,90 @@ test("hidden tabs cannot repeatedly spend the offline allowance", async ({
       ),
     )
     .toBe(5);
+});
+
+test("unavailable build buttons explain requirements instead of swallowing taps", async ({
+  page,
+}) => {
+  const { fresh } = await import("../src/engine");
+  const save = fresh(Date.now());
+  save.inventory.wood = 35;
+  save.inventory.stone = 20;
+  save.ledger[0].delta.wood = 35;
+  save.ledger[0].delta.stone = 20;
+  await page.addInitScript((s) => {
+    if (!localStorage.getItem("living-world.save"))
+      localStorage.setItem("living-world.save", JSON.stringify(s));
+  }, save);
+  await page.goto("/");
+  const button = page.getByRole("button", {
+    name: "Build sawmill",
+    exact: true,
+  });
+  await expect(button).toBeEnabled();
+  await button.click();
+  await expect(page.getByRole("status")).toContainText(
+    "Requires: a logged walk of at least 5 minutes",
+  );
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("living-world.save")!).construction,
+    ),
+  ).toHaveLength(0);
+  await page.getByRole("button", { name: "Dismiss message" }).click();
+  await page.getByRole("button", { name: "Record an accomplishment" }).click();
+  await page.getByRole("button", { name: "Let it grow" }).click();
+  await page.getByRole("button", { name: "Dismiss message" }).click();
+  await button.click();
+  await expect(page.getByRole("status")).toContainText("construction started");
+  await expect(
+    page.getByRole("img", { name: "Building Sawmill", exact: true }),
+  ).toBeVisible();
+  await expect(button).toHaveText("Building");
+  await expect(button).toBeDisabled();
+  const result = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("living-world.save")!),
+  );
+  expect(result.construction).toHaveLength(1);
+  expect(result.inventory.wood).toBeCloseTo(15, 2);
+  expect(result.inventory.stone).toBeCloseTo(10, 2);
+  await page.reload();
+  await expect(
+    page.getByRole("img", { name: "Building Sawmill", exact: true }),
+  ).toBeVisible();
+});
+test("material shortages are explained in both construction views", async ({
+  page,
+}) => {
+  const { fresh, log } = await import("../src/engine");
+  const now = Date.now();
+  const save = fresh(now);
+  save.rules.buildings.sawmill.cost.wood = 60;
+  log(save, { id: "build-check-walk", type: "walk", at: now, amount: 10 }, now);
+  await page.addInitScript((s) => {
+    if (!localStorage.getItem("living-world.save"))
+      localStorage.setItem("living-world.save", JSON.stringify(s));
+  }, save);
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Build sawmill", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Need 15 more wood");
+  expect(
+    await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("living-world.save")!).inventory.wood,
+    ),
+  ).toBe(45);
+  await page.getByRole("button", { name: "Dismiss message" }).click();
+  await page.getByRole("button", { name: "Workshops", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Build sawmill", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Need 15 more wood");
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("living-world.save")!).construction,
+    ),
+  ).toHaveLength(0);
 });

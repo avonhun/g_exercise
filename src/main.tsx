@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   activityNames,
-  afford,
   applyRules,
   build,
   calendar,
@@ -41,6 +40,7 @@ import { World, Portrait } from "./World";
 import { Icon } from "./Icon";
 import { ResourceName, ResourceAmounts } from "./Resources";
 import { WorkPanel } from "./WorkPanel";
+import { constructionFeedback } from "./constructionFeedback";
 import { fraction, durationLabel } from "./work";
 import "@fontsource/barlow/latin-400.css";
 import "@fontsource/barlow/latin-600.css";
@@ -183,6 +183,29 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
     commit((s) => {
       fn(s);
       setMessage(text);
+    });
+  }
+  function requestConstruction(id: string) {
+    commit((s) => {
+      const feedback = constructionFeedback(s, id);
+      if (feedback) {
+        setMessage(feedback);
+        return;
+      }
+      const now = Date.now();
+      build(s, id, now);
+      const job = s.construction.find((j) => j.building === id && !j.done)!;
+      setMessage(
+        s.rules.buildings[id].name +
+          ": " +
+          (job.start > s.workClock
+            ? "construction queued; starts in " +
+              durationLabel(job.start - s.workClock)
+            : "construction started; " +
+              durationLabel(job.end - s.workClock) +
+              " to build") +
+          ". Materials reserved.",
+      );
     });
   }
   function exportSave() {
@@ -340,10 +363,11 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                                 ? "Turns ore into metal fittings."
                                 : "Adds new options to the village."}
                         </p>
-                        <div className="requirements">
-                          {requirements(save, id).length
-                            ? requirements(save, id).join(" · ")
-                            : "Accomplishments earned"}
+                        <div
+                          className="requirements"
+                          id={"construction-" + id + "-requirements"}
+                        >
+                          {constructionFeedback(save, id) || "Ready to build"}
                         </div>
                         <small>
                           {b.hours}h to build ·{" "}
@@ -370,20 +394,13 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                           ))}
                         <button
                           aria-label={"Build " + b.name.toLowerCase()}
-                          onClick={() =>
-                            action(
-                              (s) => build(s, id, Date.now()),
-                              b.name +
-                                " construction queued. Materials reserved.",
-                            )
+                          aria-describedby={
+                            "construction-" + id + "-requirements"
                           }
-                          disabled={
-                            requirements(save, id).length > 0 ||
-                            !afford(save, b.cost) ||
-                            save.construction.some(
-                              (j) => j.building === id && !j.done,
-                            )
-                          }
+                          onClick={() => requestConstruction(id)}
+                          disabled={save.construction.some(
+                            (j) => j.building === id && !j.done,
+                          )}
                         >
                           {save.construction.some(
                             (j) => j.building === id && !j.done,
@@ -520,18 +537,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   <small>
                     {save.buildings.includes(id)
                       ? "Built · permanent"
-                      : save.construction.some(
-                            (j) => j.building === id && !j.done,
-                          )
-                        ? "Under construction · " +
-                          durationLabel(
-                            save.construction.find(
-                              (j) => j.building === id && !j.done,
-                            )!.end - save.workClock,
-                          ) +
-                          " remaining"
-                        : requirements(save, id).join(" · ") ||
-                          "Credentials complete"}
+                      : constructionFeedback(save, id) || "Ready to build"}
                     <br />
                     {!save.buildings.includes(id) && (
                       <ResourceAmounts amounts={b.cost} />
@@ -540,19 +546,11 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 </div>
                 {!save.buildings.includes(id) && (
                   <button
-                    onClick={() =>
-                      action(
-                        (s) => build(s, id, Date.now()),
-                        b.name + " construction queued. Materials reserved.",
-                      )
-                    }
-                    disabled={
-                      requirements(save, id).length > 0 ||
-                      !afford(save, b.cost) ||
-                      save.construction.some(
-                        (j) => j.building === id && !j.done,
-                      )
-                    }
+                    aria-label={"Build " + b.name.toLowerCase()}
+                    onClick={() => requestConstruction(id)}
+                    disabled={save.construction.some(
+                      (j) => j.building === id && !j.done,
+                    )}
                   >
                     {save.construction.some((j) => j.building === id && !j.done)
                       ? save.construction.some(
