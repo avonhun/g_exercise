@@ -34,14 +34,15 @@ import "@fontsource/bitter/latin-700.css";
 import "@fontsource/barlow/latin-400.css";
 import "@fontsource/barlow/latin-600.css";
 import "./style.css";
-const initial = load();
+import { AccountShell } from "./AccountShell";
 function bag(b: Bag) {
   return Object.entries(b)
     .filter(([, v]) => v)
     .map(([k, v]) => `${Math.round(v! * 10) / 10} ${k}`)
     .join(" · ");
 }
-function App() {
+function App({ accountControl }: { accountControl: React.ReactNode }) {
+  const [initial] = useState(load);
   const [save, setSave] = useState(initial.save);
   const [tab, setTab] = useState("village");
   const [message, setMessage] = useState("");
@@ -204,13 +205,16 @@ function App() {
             <small>A chronicle of small beginnings</small>
           </span>
         </a>
-        <button
-          className="round"
-          aria-label="Open settings"
-          onClick={() => setTab("settings")}
-        >
-          <Icon name="settings" />
-        </button>
+        <div className="header-controls">
+          {accountControl}
+          <button
+            className="round"
+            aria-label="Open settings"
+            onClick={() => setTab("settings")}
+          >
+            <Icon name="settings" />
+          </button>
+        </div>
       </header>
       <main>
         <section className="chapter">
@@ -689,9 +693,11 @@ function App() {
             <span className="eyebrow">YOUR WORLD, IN YOUR HANDS</span>
             <h2>Save & settings</h2>
             <p>
-              Stored only in this browser on this device. Browser data can be
-              cleared or evicted: keep a downloaded backup. No account,
-              tracking, or server stores your fitness history.
+              Guest worlds stay in this browser. Signed-in worlds also sync
+              privately to your account. Browser data can be cleared or evicted:
+              keep a downloaded backup. Your account world includes your
+              activity and meal logs. We use an essential sign-in cookie, with
+              no advertising or analytics cookies.
             </p>
             <div className="button-group">
               <button onClick={exportSave}>Export world</button>
@@ -1128,7 +1134,9 @@ function localTime() {
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <AccountShell
+      renderGame={(control, key) => <App key={key} accountControl={control} />}
+    />
   </React.StrictMode>,
 );
 if (import.meta.env.PROD && "serviceWorker" in navigator)

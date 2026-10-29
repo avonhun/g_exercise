@@ -1,5 +1,14 @@
 import { fresh, migrate, type Save } from "./engine";
-export const KEY = "living-world.save";
+const GUEST_KEY = "living-world.save";
+export let KEY = "living-world.save";
+export function useWorldScope(playerId?: string) {
+  KEY = playerId ? GUEST_KEY + ".account." + playerId : GUEST_KEY;
+  lastRead = undefined;
+}
+export function guestWorld() {
+  const text = localStorage.getItem(GUEST_KEY);
+  return text ? migrate(JSON.parse(text)) : null;
+}
 let lastRead: string | null | undefined;
 export function load(): { save: Save; error?: string } {
   try {
@@ -21,6 +30,7 @@ export function persist(s: Save) {
       "Your world changed in another tab. Reload this page to continue with the latest save.",
     );
   const text = JSON.stringify(s);
+  if (KEY !== GUEST_KEY) localStorage.setItem(KEY + ".dirty", "true");
   localStorage.setItem(KEY, text);
   lastRead = text;
 }

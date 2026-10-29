@@ -33,3 +33,18 @@ it("preserves malformed raw saves for recovery", async () => {
   expect(store.load().error).toBeTruthy();
   expect(data.get(store.KEY)).toBe("invalid");
 });
+it("isolates player saves and keeps the original guest world", async () => {
+  const store = await import("./store");
+  const guest = store.load().save;
+  store.persist(guest);
+  store.useWorldScope("alice");
+  const a = store.load().save;
+  a.discoveries = ["brook"];
+  store.persist(a);
+  store.useWorldScope("bob");
+  expect(store.load().save.discoveries).toEqual([]);
+  store.useWorldScope("alice");
+  expect(store.load().save.discoveries).toEqual(["brook"]);
+  store.useWorldScope();
+  expect(store.load().save).toEqual(guest);
+});

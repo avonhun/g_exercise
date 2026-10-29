@@ -1,8 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { accountHttp } from "./server/http";
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 export default defineConfig({
   plugins: [
+    {
+      name: "local-accounts",
+      configureServer(server) {
+        server.middlewares.use((req, res, next) =>
+          req.url?.startsWith("/api/account")
+            ? void accountHttp(req, res)
+            : next(),
+        );
+      },
+    },
     react(),
     {
       name: "offline-shell",

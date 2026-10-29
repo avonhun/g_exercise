@@ -1038,3 +1038,77 @@ summary {
 .objective button .action-arrow {
   margin-left: auto;
 }
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.account-button {
+  color: var(--paper);
+  border: 1px solid #83908c;
+  min-height: 36px;
+  font-size: 12px;
+  padding: 7px 10px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-button:hover {
+  background: #405059;
+}
+.sync-indicator {
+  padding: 0 18px 100px;
+  max-width: 1200px;
+  margin: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+.account-modal .account-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+.account-tabs button {
+  flex: 1;
+}
+.account-tabs [aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.account-modal > button:not(.close) {
+  margin: 8px 8px 0 0;
+}
+.account-error {
+  padding: 10px;
+  border-left: 3px solid var(--red);
+  background: #f1e1d8;
+}
+.account-modal .warning button {
+  width: 100%;
+}
+@media (max-width: 420px) {
+  .brand small {
+    display: none;
+  }
+  .brand {
+    font-size: 12px;
+    gap: 6px;
+  }
+  .brand-icon .icon {
+    width: 22px;
+  }
+  .account-button {
+    max-width: 90px;
+    font-size: 11px;
+  }
+  .header-controls {
+    gap: 0;
+  }
+  .topbar {
+    padding: 0 10px;
+  }
+  .round {
+    width: 35px;
+  }
+}

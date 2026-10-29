@@ -5,27 +5,38 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
-    "test": "vitest run src",
+    "build": "tsc -b && tsc -p tsconfig.server.json && vite build",
+    "test": "vitest run src server",
     "preview": "vite preview --host 0.0.0.0",
     "test:e2e": "npm run build && playwright test",
-    "art:prepare": "node scripts/prepare-art.mjs"
+    "art:prepare": "node scripts/prepare-art.mjs",
+    "db:migrate": "tsx scripts/migrate-db.ts",
+    "preview:accounts": "LOCAL_DATABASE_PATH=/tmp/living-world-preview.sqlite APP_ORIGIN=http://127.0.0.1:4173 tsx server/start.ts",
+    "start": "tsx server/start.ts",
+    "test:accounts": "npm run build && playwright test -c playwright.accounts.config.ts"
   },
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/bitter": "^5.3.0",
+    "pg": "^8.23.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "prettier": "^3.9.10",
     "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
     "typescript": "~5.7.3",
     "vite": "^6.1.0",
     "vitest": "^3.0.5"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

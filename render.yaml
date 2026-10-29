@@ -1,0 +1,19 @@
+# Review in Render before creating resources. Does not provision a paid database.
+services:
+  - type: web
+    name: living-world
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm test && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeployTrigger: "off"
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_ORIGIN
+        sync: false
