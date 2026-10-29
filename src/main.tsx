@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   activityNames,
+  afford,
   applyRules,
   build,
   calendar,
@@ -26,10 +27,21 @@ import {
   type Bag,
   type Save,
 } from "./engine";
-import { backup, download, load, persist, recovery, restore } from "./store";
+import {
+  backup,
+  download,
+  load,
+  persist,
+  recovery,
+  restore,
+  migrationBackup,
+  KEY,
+} from "./store";
 import { World, Portrait } from "./World";
 import { Icon } from "./Icon";
 import { ResourceName, ResourceAmounts } from "./Resources";
+import { WorkPanel } from "./WorkPanel";
+import { fraction, durationLabel } from "./work";
 import "@fontsource/barlow/latin-400.css";
 import "@fontsource/barlow/latin-600.css";
 import "./style.css";
@@ -41,6 +53,7 @@ function bag(b: Bag) {
     .join(" · ");
 }
 function App({ accountControl }: { accountControl: React.ReactNode }) {
+  const [worldKey] = useState(() => KEY);
   const [initial] = useState(load);
   const [save, setSave] = useState(initial.save);
   const [tab, setTab] = useState("village");
@@ -106,7 +119,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
       const s = structuredClone(save);
       tick(s, Date.now());
       fn(s);
-      persist(s);
+      persist(s, worldKey);
       setSave(s);
       setSaved(
         new Date().toLocaleTimeString([], {
@@ -120,30 +133,42 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
   }
   useEffect(() => {
     if (storageError) return;
-    const id = setInterval(() => {
+    const advance = (foreground: boolean) => {
       setSave((prev) => {
         try {
           const s = structuredClone(prev);
-          tick(s, Date.now());
-          persist(s);
+          tick(s, Date.now(), {
+            active: foreground && Date.now() - s.clock <= 30000,
+          });
+          persist(s, worldKey);
           return s;
         } catch (e) {
           setStorageError(
             (e as Error).message ||
-              "Browser storage is unavailable or full. Export this world before closing.",
+              "Could not save this world. Export before closing.",
           );
           return prev;
         }
       });
+    };
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") advance(true);
     }, 15000);
-    return () => clearInterval(id);
+    const visibility = () => {
+      if (document.visibilityState === "visible") advance(false);
+    };
+    document.addEventListener("visibilitychange", visibility);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", visibility);
+    };
   }, [storageError]);
   useEffect(() => {
     if (!storageError) {
       try {
         const s = structuredClone(initial.save);
         tick(s, Date.now());
-        persist(s);
+        persist(s, worldKey);
         setSave(s);
         setSaved("just now");
       } catch {
@@ -167,7 +192,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
       try {
         const s = migrate(JSON.parse(text));
         backup();
-        persist(s);
+        persist(s, worldKey);
         setSave(s);
         setStorageError("");
         setMessage(
@@ -276,6 +301,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 </div>
               </section>
               <aside className="village-sidebar">
+                <WorkPanel save={save} />
                 <section className="story-card">
                   <div className="character">
                     <Portrait />
@@ -319,19 +345,57 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                             : "Accomplishments earned"}
                         </div>
                         <small>
+                          {b.hours}h to build ·{" "}
                           <ResourceAmounts amounts={b.cost} />
                         </small>
+                        {save.construction
+                          .filter((j) => j.building === id && !j.done)
+                          .map((j) => (
+                            <div className="construction-status" key={j.id}>
+                              <progress
+                                aria-label={b.name + " construction progress"}
+                                value={fraction(j, save.workClock)}
+                                max={1}
+                              />
+                              <span>
+                                {j.start > save.workClock
+                                  ? "Queued · starts in " +
+                                    durationLabel(j.start - save.workClock)
+                                  : "Building · " +
+                                    durationLabel(j.end - save.workClock) +
+                                    " remaining"}
+                              </span>
+                            </div>
+                          ))}
                         <button
                           aria-label={"Build " + b.name.toLowerCase()}
                           onClick={() =>
                             action(
                               (s) => build(s, id, Date.now()),
-                              b.name + " is now part of the village.",
+                              b.name +
+                                " construction queued. Materials reserved.",
                             )
                           }
-                          disabled={requirements(save, id).length > 0}
+                          disabled={
+                            requirements(save, id).length > 0 ||
+                            !afford(save, b.cost) ||
+                            save.construction.some(
+                              (j) => j.building === id && !j.done,
+                            )
+                          }
                         >
-                          Build
+                          {save.construction.some(
+                            (j) => j.building === id && !j.done,
+                          )
+                            ? save.construction.some(
+                                (j) =>
+                                  j.building === id &&
+                                  !j.done &&
+                                  j.start <= save.workClock,
+                              )
+                              ? "Building"
+                              : "Queued"
+                            : "Build"}
                         </button>
                       </article>
                     ))}
@@ -440,7 +504,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   <small>{bag(j.output)}</small>
                 </span>
                 <span>
-                  {Math.max(1, Math.ceil((j.end - Date.now()) / 60000))} min
+                  {Math.max(1, Math.ceil((j.end - save.workClock) / 60000))} min
                   remaining
                 </span>
               </div>
@@ -455,8 +519,18 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   <small>
                     {save.buildings.includes(id)
                       ? "Built · permanent"
-                      : requirements(save, id).join(" · ") ||
-                        "Credentials complete"}
+                      : save.construction.some(
+                            (j) => j.building === id && !j.done,
+                          )
+                        ? "Under construction · " +
+                          durationLabel(
+                            save.construction.find(
+                              (j) => j.building === id && !j.done,
+                            )!.end - save.workClock,
+                          ) +
+                          " remaining"
+                        : requirements(save, id).join(" · ") ||
+                          "Credentials complete"}
                     <br />
                     {!save.buildings.includes(id) && (
                       <ResourceAmounts amounts={b.cost} />
@@ -468,12 +542,27 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                     onClick={() =>
                       action(
                         (s) => build(s, id, Date.now()),
-                        b.name + " built.",
+                        b.name + " construction queued. Materials reserved.",
                       )
                     }
-                    disabled={requirements(save, id).length > 0}
+                    disabled={
+                      requirements(save, id).length > 0 ||
+                      !afford(save, b.cost) ||
+                      save.construction.some(
+                        (j) => j.building === id && !j.done,
+                      )
+                    }
                   >
-                    Build
+                    {save.construction.some((j) => j.building === id && !j.done)
+                      ? save.construction.some(
+                          (j) =>
+                            j.building === id &&
+                            !j.done &&
+                            j.start <= save.workClock,
+                        )
+                        ? "Building"
+                        : "Queued"
+                      : "Build"}
                   </button>
                 )}
               </div>
@@ -555,7 +644,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                       {l.voided
                         ? "Reward reversed"
                         : l.qualified
-                          ? bag(l.reward)
+                          ? (l.delivery === "gather"
+                              ? "Gathering job: "
+                              : "Legacy reward: ") + bag(l.reward)
                           : "Recorded without reward: threshold or daily cap"}
                       {l.notes && (
                         <>
@@ -686,6 +777,18 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
             </p>
             <div className="button-group">
               <button onClick={exportSave}>Export world</button>
+              {migrationBackup() && (
+                <button
+                  onClick={() =>
+                    download(
+                      migrationBackup()!,
+                      "living-world-before-timed-work.json",
+                    )
+                  }
+                >
+                  Export pre-update backup
+                </button>
+              )}
               <button
                 onClick={() => {
                   try {
@@ -715,7 +818,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   try {
                     const s = restore();
                     backup();
-                    persist(s);
+                    persist(s, worldKey);
                     setSave(s);
                     setStorageError("");
                     setMessage("Backup restored.");
@@ -936,7 +1039,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                       exportSave();
                       backup();
                       const next = fresh(Date.now());
-                      persist(next);
+                      persist(next, worldKey);
                       setSave(next);
                       setResetPhrase("");
                       setEditor(JSON.stringify(next.rules, null, 2));
@@ -960,7 +1063,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
             {storageError
               ? "Save needs attention"
               : `On-device save · ${saved || "active"}`}{" "}
-            · v0.3
+            · v0.4
           </small>
         </footer>
       </main>
@@ -1032,7 +1135,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   const l = s.logs.find((l) => l.id === id)!;
                   setMessage(
                     l.qualified
-                      ? `The village thanks you. +${bag(l.reward)}`
+                      ? `Work queued: ${bag(l.reward)} to gather. Accomplishment credited now.`
                       : "Saved without rewards: below the qualifying amount or above the daily cap.",
                   );
                   setLogger(false);
@@ -1099,7 +1202,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   : `Qualifying minimum: ${save.rules.activities[type].minimum} ${type === "pushups" ? "reps" : "minutes"}.`}
                 <br />
                 Rewards up to {save.rules.activities[type].cap} times per local
-                day. {bag(save.rules.activities[type].reward)}.
+                day. {bag(save.rules.activities[type].reward)} gathered over{" "}
+                {save.rules.activities[type].gatherHours} hours, starting when
+                logged. Each resource has its own queue.
               </p>
               <button className="primary" type="submit">
                 Let it grow <Icon name="arrow" className="action-arrow" />

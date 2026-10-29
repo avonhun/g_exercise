@@ -48,3 +48,29 @@ it("isolates player saves and keeps the original guest world", async () => {
   store.useWorldScope();
   expect(store.load().save).toEqual(guest);
 });
+it("archives an old snapshot once before migrating the active world", async () => {
+  const store = await import("./store");
+  const old = JSON.parse(JSON.stringify(fresh(Date.now())));
+  old.schema = 2;
+  delete old.workClock;
+  delete old.gathering;
+  delete old.construction;
+  const raw = JSON.stringify(old);
+  data.set(store.KEY, raw);
+  const result = store.load();
+  expect(result.error).toBeUndefined();
+  expect(result.save.schema).toBe(3);
+  expect(data.get(store.KEY + ".pre-v3")).toBe(raw);
+  store.persist(result.save);
+  store.load();
+  expect(data.get(store.KEY + ".pre-v3")).toBe(raw);
+});
+it("rejects a late timer write after the active account changes", async () => {
+  const store = await import("./store");
+  store.useWorldScope("alice");
+  const a = store.load().save,
+    key = store.KEY;
+  store.useWorldScope("bob");
+  expect(() => store.persist(a, key)).toThrow("no longer active");
+  expect(data.get(store.KEY)).toBeUndefined();
+});

@@ -1641,3 +1641,225 @@ main {
     padding-right: 18px;
   }
 }
+/* Actual work state drives the scene; paused/finished jobs have no workers. */
+.gather-crew {
+  position: absolute;
+  width: 8%;
+  transform: translate(-50%, -70%);
+  pointer-events: none;
+}
+.villager {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.worker-arm {
+  transform-origin: 18px 22px;
+  animation: work-swing 1.35s steps(3, end) infinite;
+}
+.villager-wood .worker-arm {
+  animation-duration: 1.5s;
+}
+.villager-carry .worker-arm {
+  animation-name: work-carry;
+}
+.worker-body {
+  animation: worker-shift 1.5s steps(2, end) infinite;
+}
+.work-particles {
+  animation: wood-chips 1.5s steps(3, end) infinite;
+  transform-origin: 24px 25px;
+}
+.villager-build .worker-arm {
+  animation-duration: 1s;
+}
+.villager-build .work-particles {
+  animation-duration: 1s;
+}
+.construction-site {
+  position: absolute;
+  transform: translate(-50%, -85%);
+  width: 25%;
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+.construction-preview,
+.scaffold {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.is-queued .scaffold {
+  opacity: 0.4;
+}
+.builder {
+  position: absolute;
+  width: 32%;
+  bottom: 6%;
+}
+.builder-one {
+  left: 4%;
+}
+.builder-two {
+  right: 0;
+  bottom: 18%;
+  transform: scaleX(-1);
+}
+.builder-two .worker-arm,
+.builder-two .worker-body,
+.builder-two .work-particles {
+  animation-delay: 0.45s;
+}
+.work-panel {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+}
+.work-panel h2 {
+  margin-bottom: 10px;
+}
+.gather-row {
+  margin: 12px 0;
+}
+.work-heading,
+.work-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.work-heading {
+  font-size: 14px;
+}
+.work-details {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.work-panel details summary {
+  font-size: 12px;
+  padding: 5px 0;
+}
+.work-panel details p {
+  font-size: 12px;
+  margin: 3px 0;
+}
+.work-panel .subtle {
+  margin: 10px 0 0;
+}
+progress {
+  display: block;
+  width: 100%;
+  height: 5px;
+  border: 0;
+  appearance: none;
+  background: #d1d5c9;
+  color: #6d7f54;
+  margin: 8px 0;
+}
+progress::-webkit-progress-bar {
+  background: #d1d5c9;
+}
+progress::-webkit-progress-value {
+  background: #6d7f54;
+}
+progress::-moz-progress-bar {
+  background: #6d7f54;
+}
+.village-sidebar .objective .construction-status {
+  grid-column: 1/-1;
+  grid-row: 5;
+  font-size: 12px;
+  color: var(--muted);
+}
+.construction-status progress {
+  margin: 3px 0 5px;
+}
+@keyframes work-swing {
+  0%,
+  15% {
+    transform: rotate(-65deg);
+  }
+  45%,
+  65% {
+    transform: rotate(25deg);
+  }
+  100% {
+    transform: rotate(-65deg);
+  }
+}
+@keyframes worker-shift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1px);
+  }
+}
+@keyframes wood-chips {
+  0%,
+  35%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  45% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+    transform: translate(4px, -5px);
+  }
+}
+@keyframes work-carry {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+@media (max-width: 760px) {
+  .construction-site {
+    width: 29%;
+    transform: translate(-50%, -80%);
+  }
+  .gather-crew {
+    width: 9%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .villager * {
+    animation: none !important;
+  }
+  .work-particles {
+    display: none;
+  }
+}
+.gather-crew {
+  width: 4%;
+}
+.builder {
+  width: 16%;
+}
+.scaffold g {
+  stroke-width: 1.4;
+}
+.village-sidebar:has(.work-panel) .story-card {
+  display: none;
+}
+@media (max-width: 760px) {
+  .gather-crew {
+    width: 5%;
+  }
+}
+.background-crew .worker-arm,
+.background-crew .worker-body,
+.background-crew .work-particles {
+  animation-duration: 4s;
+}

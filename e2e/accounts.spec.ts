@@ -56,7 +56,7 @@ test("real registration, cookie session, private sync, guest migration and cross
         Object.keys(localStorage)
           .filter((k) => /^living-world.save.account.[^.]+$/.test(k))
           .map((k) => JSON.parse(localStorage.getItem(k)!))
-          .some((s) => s.logs.length === 1),
+          .some((s) => s.logs.length === 1 && s.gathering.length === 2),
       ),
     )
     .toBe(true);

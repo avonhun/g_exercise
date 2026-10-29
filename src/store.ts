@@ -14,7 +14,11 @@ export function load(): { save: Save; error?: string } {
   try {
     const text = localStorage.getItem(KEY);
     lastRead = text;
-    return { save: text ? migrate(JSON.parse(text)) : fresh(Date.now()) };
+    const raw = text ? JSON.parse(text) : null;
+    const save = raw ? migrate(raw) : fresh(Date.now());
+    if (text && raw.schema < 3 && !localStorage.getItem(KEY + ".pre-v3"))
+      localStorage.setItem(KEY + ".pre-v3", text);
+    return { save };
   } catch {
     return {
       save: fresh(Date.now()),
@@ -23,7 +27,11 @@ export function load(): { save: Save; error?: string } {
     };
   }
 }
-export function persist(s: Save) {
+export function persist(s: Save, expectedKey = KEY) {
+  if (expectedKey !== KEY)
+    throw Error(
+      "This world is no longer active. Reopen the correct account before saving.",
+    );
   const current = localStorage.getItem(KEY);
   if (lastRead !== undefined && current !== lastRead)
     throw Error(
@@ -55,4 +63,12 @@ export function download(text: string, name: string) {
 }
 export function recovery() {
   download(localStorage.getItem(KEY) || "{}", "living-world-recovery.json");
+}
+
+export function migrationBackup() {
+  try {
+    return localStorage.getItem(KEY + ".pre-v3");
+  } catch {
+    return null;
+  }
 }

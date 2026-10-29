@@ -68,3 +68,7 @@ Serve `dist/` over HTTPS at the root of `world.bballstatistics.com`. Hosting and
 Garden construction settles production before enabling food; strength alternatives cannot use unrelated streak credentials; backdating uses the current date. Active recipes cannot change workshops mid-queue, and completed jobs remain importable after a recipe is retired. Import validation checks resource bags, debts, duplicate event IDs, timestamps and event structure. Two tabs use optimistic save comparison so stale state cannot overwrite a newer world. The logger supports Escape and keyboard focus containment.
 
 Offline shell loading is now cache-first per build: a worker cannot mix new network HTML with old offline assets, and only known app files are cached. All art is precached. `vercel.json` sets static build output, HTTPS-host response security headers, immutable hashed assets, and no-cache service-worker/HTML behavior. No remote deployment is established merely by adding that file. See `DEPLOYMENT.md`.
+
+## Timed work revision (unpublished)
+
+Activity logs now fund finite gathering jobs instead of immediately depositing their entire reward. Buildings use a timed shared construction crew. See [TIMED_WORK.md](TIMED_WORK.md) for durations, queue semantics, schema-3 migration, corrections, offline limits and preview validation. Existing stocks, milestones and completed buildings are preserved. The developer console controls future gathering/construction times without resetting the world.

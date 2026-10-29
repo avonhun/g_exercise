@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 test("mobile activity, building, crafting, correction, saves and console", async ({
   page,
 }) => {
+  await page.clock.install();
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
@@ -27,8 +28,24 @@ test("mobile activity, building, crafting, correction, saves and console", async
   await expect(page.getByRole("status")).toContainText("5 wood");
   await page.getByRole("button", { name: "Dismiss message" }).click();
   await page.getByRole("button", { name: "Build sawmill" }).click();
-  await expect(page.getByRole("status")).toContainText("Sawmill is now");
+  await expect(page.getByRole("status")).toContainText("construction queued");
   await page.getByRole("button", { name: "Dismiss message" }).click();
+  await expect(
+    page.getByRole("img", { name: "Building Sawmill", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Townsfolk gathering wood" }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Visit Sawmill" })).toHaveCount(
+    0,
+  );
+  await page.clock.fastForward(4 * 3600000 + 15000);
+  await expect(
+    page.getByRole("button", { name: "Visit Sawmill" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Townsfolk gathering wood" }),
+  ).toHaveCount(0);
   await page.getByRole("button", { name: "Workshops", exact: true }).click();
   await page.getByRole("button", { name: "Queue a batch" }).first().click();
   await expect(page.getByText("480 min remaining")).toBeVisible();
@@ -256,4 +273,140 @@ test("consistent game typography, labelled resources and a single accomplishment
   await expect(
     page.getByLabel("What did you do?").locator("option[value=pushups]"),
   ).toHaveCount(1);
+});
+
+test("visible crews gather gradually, build in sequence, and rest when work finishes", async ({
+  page,
+}) => {
+  const { fresh, log, build } = await import("../src/engine");
+  const now = Date.UTC(2026, 9, 28, 12);
+  const save = fresh(now);
+  for (const [id, type, amount] of [
+    ["scene-walk", "walk", 10],
+    ["scene-gym", "gym", 0],
+    ["scene-meal", "meal", 0],
+  ] as const)
+    log(
+      save,
+      { id, type, amount, at: now, notes: "Automated scene test" },
+      now,
+    );
+  build(save, "sawmill", now);
+  build(save, "farm", now);
+  await page.clock.install({ time: new Date(now) });
+  await page.addInitScript((s) => {
+    if (!localStorage.getItem("living-world.save"))
+      localStorage.setItem("living-world.save", JSON.stringify(s));
+  }, save);
+  await page.goto("/");
+  await expect(
+    page.getByRole("img", { name: "Townsfolk gathering wood" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Townsfolk gathering ore" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Building Sawmill", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Queued construction: Kitchen garden" }),
+  ).toBeVisible();
+  const arm = page.locator(".gather-wood .worker-arm");
+  expect(await arm.evaluate((el) => getComputedStyle(el).animationName)).toBe(
+    "work-swing",
+  );
+  expect(
+    await arm.evaluate((el) =>
+      el.getAnimations().some((a) => a.playState === "running"),
+    ),
+  ).toBe(true);
+  await page.clock.fastForward(15 * 60000);
+  await page.screenshot({
+    path: "test-results/village-working-mobile.png",
+    fullPage: true,
+  });
+  const stored = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("living-world.save")!),
+  );
+  expect(stored.inventory.wood).toBeLessThan(15);
+  expect(stored.inventory.ore).toBeGreaterThan(0);
+  expect(stored.inventory.ore).toBeLessThan(40);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.screenshot({
+    path: "test-results/village-working-desktop.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(await arm.evaluate((el) => getComputedStyle(el).animationName)).toBe(
+    "none",
+  );
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.clock.fastForward(2 * 3600000);
+  await expect(
+    page.getByRole("img", { name: "Townsfolk gathering wood" }),
+  ).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByRole("img", { name: "Building Sawmill", exact: true }),
+  ).toBeVisible();
+  await page.clock.fastForward(2 * 3600000);
+  await expect(
+    page.getByRole("button", { name: "Visit Sawmill" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Building Kitchen garden", exact: true }),
+  ).toBeVisible();
+  await page.clock.fastForward(4 * 3600000);
+  await expect(
+    page.getByRole("img", { name: "Townsfolk gathering ore" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Visit Kitchen garden" }),
+  ).toBeVisible();
+  await expect(page.locator(".construction-site")).toHaveCount(0);
+});
+
+test("hidden tabs cannot repeatedly spend the offline allowance", async ({
+  page,
+}) => {
+  const { fresh, log } = await import("../src/engine");
+  const now = Date.UTC(2026, 9, 28, 12);
+  const s = fresh(now);
+  s.rules.offlineHours = 1;
+  log(s, { id: "absence-gym", type: "gym", at: now, amount: 0 }, now);
+  await page.clock.install({ time: new Date(now) });
+  await page.addInitScript(
+    (save) => localStorage.setItem("living-world.save", JSON.stringify(save)),
+    s,
+  );
+  await page.goto("/");
+  await page.evaluate(() =>
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => "hidden",
+    }),
+  );
+  await page.clock.fastForward(10 * 86400000);
+  expect(
+    await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("living-world.save")!).inventory.ore,
+    ),
+  ).toBe(0);
+  await page.evaluate(() => {
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => "visible",
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("living-world.save")!).inventory.ore,
+      ),
+    )
+    .toBe(5);
 });

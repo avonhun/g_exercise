@@ -37,6 +37,9 @@ describe("activity and permanent accomplishments", () => {
     add(s, "gym");
     add(s, "gym");
     add(s, "gym", t, "b");
+    expect(s.inventory.ore).toBe(0);
+    expect(s.gathering.filter((j) => j.resource === "ore")).toHaveLength(1);
+    tick(s, t + 8 * 3600000);
     expect(s.inventory.ore).toBe(40);
     expect(count(s, "gym")).toBe(1);
   });
@@ -54,6 +57,8 @@ describe("activity and permanent accomplishments", () => {
     add(s, "pushups", t, "b", 5);
     expect(count(s, "gym")).toBe(0);
     expect(count(s, "hike")).toBe(0);
+    expect(s.inventory.ore).toBe(0);
+    tick(s, t + 2 * 3600000);
     expect(s.inventory.ore).toBe(3);
     expect(s.credentials["pushups:1"]).toBe(t);
   });
@@ -86,11 +91,13 @@ describe("activity and permanent accomplishments", () => {
   it("spent corrections produce a debt repaid by future earnings without negative inventory", () => {
     const s = fresh(t);
     add(s, "gym");
+    tick(s, t + 8 * 3600000);
     s.inventory.ore = 2;
-    reverse(s, "a", t);
+    reverse(s, "a", t + 8 * 3600000);
     expect(s.debt.ore).toBe(38);
     expect(s.inventory.ore).toBe(0);
     add(s, "gym", t + DAY, "next");
+    tick(s, t + DAY + 8 * 3600000);
     expect(s.inventory.ore).toBe(2);
     expect(s.debt.ore).toBe(0);
   });
@@ -133,7 +140,8 @@ describe("accounting and time", () => {
     const before = structuredClone(s);
     tick(s, t + 28 * DAY);
     expect(s.inventory.wood - before.inventory.wood).toBe(9);
-    expect(s.buildings).toEqual(before.buildings);
+    expect(before.buildings.every((b) => s.buildings.includes(b))).toBe(true);
+    expect(s.buildings).toContain("blacksmith");
     expect(s.credentials).toEqual(before.credentials);
     expect(s.inventory.ore).toBe(40);
   });
@@ -181,6 +189,8 @@ describe("rules, saves and isolated simulation", () => {
     applyRules(s, rules);
     tick(s, t + DAY);
     add(s, "gym", t + DAY, "b");
+    expect(s.inventory.ore).toBe(40);
+    tick(s, t + DAY + 8 * 3600000);
     expect(s.inventory.ore).toBe(44);
     expect(s.jobs[0].output.stone).toBe(6);
     expect(s.credentials["gym:1"]).toBe(t);
@@ -205,7 +215,7 @@ describe("rules, saves and isolated simulation", () => {
     add(s, "gym");
     const old = { ...s, schema: 1, debt: undefined };
     const result = migrate(old);
-    expect(result.schema).toBe(2);
+    expect(result.schema).toBe(3);
     expect(result.credentials).toEqual(s.credentials);
     expect(result.inventory).toEqual(s.inventory);
     expect(result.debt).toEqual({});
@@ -244,6 +254,7 @@ describe("starter campaign reachability", () => {
       for (const id of ["sawmill", "farm", "blacksmith", "kitchen", "hall2"])
         if (
           !s.buildings.includes(id) &&
+          !s.construction.some((j) => j.building === id && !j.done) &&
           !requirements(s, id).length &&
           afford(s, s.rules.buildings[id].cost)
         )
@@ -277,6 +288,8 @@ describe("starter campaign reachability", () => {
     reverse(s, "a", t);
     add(s, "gym", t, "replacement");
     expect(count(s, "gym")).toBe(1);
+    expect(s.inventory.ore).toBe(0);
+    tick(s, t + 8 * 3600000);
     expect(s.inventory.ore).toBe(40);
   });
 });
@@ -317,10 +330,12 @@ describe("review regressions", () => {
   it("does not retroactively grow garden food before construction", () => {
     const s = fresh(t);
     add(s, "meal");
-    tick(s, t + 1800000);
-    build(s, "farm", t + 1800000);
+    tick(s, t + 4 * 3600000);
+    build(s, "farm", t + 4 * 3600000);
     const food = s.inventory.food;
-    tick(s, t + 5400000);
+    tick(s, t + 5 * 3600000);
+    expect(s.inventory.food).toBe(food);
+    tick(s, t + 7 * 3600000);
     expect(s.inventory.food - food).toBeCloseTo(8 / 24);
   });
   it("home strength cannot be bypassed with an old gym streak", () => {

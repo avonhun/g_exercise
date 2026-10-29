@@ -1,3 +1,4 @@
+import { HOUR, type GatherJob, type ConstructionJob } from "./work";
 export const DAY = 86400000;
 export const resources = [
   "wood",
@@ -31,6 +32,7 @@ export interface Rule {
   reward: Bag;
   cap: number;
   minimum: number;
+  gatherHours: number;
 }
 export interface Recipe {
   name: string;
@@ -40,6 +42,7 @@ export interface Recipe {
   hours: number;
 }
 export interface Gate {
+  hours: number;
   name: string;
   cost: Bag;
   goals: Partial<Record<Activity, number>>;
@@ -64,16 +67,36 @@ export const seed: Rules = {
   mealDefinition:
     "A satisfying meal with a protein source, plants, and enough food for you.",
   activities: {
-    gym: { reward: { ore: 40 }, cap: 1, minimum: 0 },
-    soccer: { reward: { momentum: 50 }, cap: 1, minimum: 0 },
-    hike: { reward: { wood: 45, discovery: 10 }, cap: 1, minimum: 45 },
-    cardio: { reward: { momentum: 20 }, cap: 1, minimum: 15 },
-    cycle: { reward: { momentum: 12, wood: 5 }, cap: 2, minimum: 5 },
-    walk: { reward: { wood: 5, momentum: 1 }, cap: 2, minimum: 5 },
-    pushups: { reward: { ore: 3, momentum: 2 }, cap: 1, minimum: 1 },
-    meal: { reward: { food: 12 }, cap: 3, minimum: 0 },
-    plants: { reward: { herbs: 4 }, cap: 3, minimum: 0 },
-    snack: { reward: { food: 3 }, cap: 1, minimum: 0 },
+    gym: { gatherHours: 8, reward: { ore: 40 }, cap: 1, minimum: 0 },
+    soccer: { gatherHours: 6, reward: { momentum: 50 }, cap: 1, minimum: 0 },
+    hike: {
+      gatherHours: 8,
+      reward: { wood: 45, discovery: 10 },
+      cap: 1,
+      minimum: 45,
+    },
+    cardio: { gatherHours: 4, reward: { momentum: 20 }, cap: 1, minimum: 15 },
+    cycle: {
+      gatherHours: 4,
+      reward: { momentum: 12, wood: 5 },
+      cap: 2,
+      minimum: 5,
+    },
+    walk: {
+      gatherHours: 2,
+      reward: { wood: 5, momentum: 1 },
+      cap: 2,
+      minimum: 5,
+    },
+    pushups: {
+      gatherHours: 2,
+      reward: { ore: 3, momentum: 2 },
+      cap: 1,
+      minimum: 1,
+    },
+    meal: { gatherHours: 4, reward: { food: 12 }, cap: 3, minimum: 0 },
+    plants: { gatherHours: 2, reward: { herbs: 4 }, cap: 3, minimum: 0 },
+    snack: { gatherHours: 2, reward: { food: 3 }, cap: 1, minimum: 0 },
   },
   passive: { wood: 3, stone: 8, food: 8 },
   recipes: {
@@ -108,26 +131,31 @@ export const seed: Rules = {
   },
   buildings: {
     sawmill: {
+      hours: 4,
       name: "Sawmill",
       cost: { wood: 20, stone: 10 },
       goals: { walk: 1 },
     },
     farm: {
+      hours: 2,
       name: "Kitchen garden",
       cost: { wood: 15, stone: 5 },
       goals: { meal: 1 },
     },
     blacksmith: {
+      hours: 8,
       name: "Blacksmith",
       cost: { wood: 30, stone: 20 },
       goals: { gym: 1 },
     },
     kitchen: {
+      hours: 8,
       name: "Village kitchen",
       cost: { planks: 15, stone: 15 },
       goals: { meal: 4 },
     },
     hall2: {
+      hours: 48,
       name: "Gathering hall · level II",
       cost: { planks: 30, fittings: 20, rations: 10 },
       goals: { hike: 2, soccer: 2, meal: 12 },
@@ -148,6 +176,7 @@ export interface Log {
   qualified: boolean;
   rule: number;
   voided?: boolean;
+  delivery?: "instant" | "gather";
 }
 export interface Transaction {
   id: string;
@@ -157,7 +186,10 @@ export interface Transaction {
   rule: number;
 }
 export interface Save {
-  schema: 2;
+  schema: 3;
+  workClock: number;
+  gathering: GatherJob[];
+  construction: ConstructionJob[];
   created: number;
   clock: number;
   productionAt?: number;
@@ -183,7 +215,10 @@ export interface Save {
 }
 export function fresh(now: number): Save {
   const s: Save = {
-    schema: 2,
+    schema: 3,
+    workClock: now,
+    gathering: [],
+    construction: [],
     created: now,
     clock: now,
     productionAt: now,
@@ -284,10 +319,8 @@ export function goal(s: Save, a: Activity, n: number) {
   return s.credentials[a + ":" + n] !== undefined || count(s, a) >= n;
 }
 function accrue(s: Save, now: number, force = false) {
-  const elapsed = Math.min(
-    now - (s.productionAt ?? s.clock),
-    s.rules.offlineHours * 3600000,
-  );
+  // This is simulated work time, already bounded by tick's offline allowance.
+  const elapsed = Math.max(0, now - (s.productionAt ?? s.workClock));
   const b: Bag = {};
   for (const r of resources) {
     if (r === "food" && !s.buildings.includes("farm")) continue;
@@ -295,24 +328,85 @@ function accrue(s: Save, now: number, force = false) {
   }
   // Batch passive earnings hourly to keep years of history reasonably small.
   // productionAt is separate from the clock high-water mark: short ticks lose no time.
-  if (
-    elapsed > 0 &&
-    (force || elapsed >= Math.min(3600000, s.rules.offlineHours * 3600000))
-  ) {
+  if (elapsed > 0 && (force || elapsed >= HOUR)) {
     if (Object.values(b).some((v) => v! > 0))
       move(s, b, "Village production", now);
     s.productionAt = now;
   }
 }
-export function tick(s: Save, now: number) {
-  if (now <= s.clock) return;
-  accrue(s, now);
-  for (const j of s.jobs)
-    if (!j.done && j.end <= now) {
-      move(s, j.output, "Craft " + j.recipe, now);
+export function tick(s: Save, now: number, options: { active?: boolean } = {}) {
+  if (!Number.isFinite(now) || now <= s.clock) return;
+  const start = s.workClock;
+  const end =
+    start +
+    (options.active
+      ? now - s.clock
+      : Math.min(now - s.clock, s.rules.offlineHours * HOUR));
+  // Resolve building completions chronologically so a new garden only produces
+  // during the part of this interval in which it actually exists.
+  const boundaries = [
+    ...new Set([
+      ...s.construction
+        .filter((j) => !j.done && j.end > start && j.end <= end)
+        .map((j) => j.end),
+      end,
+    ]),
+  ].sort((a, b) => a - b);
+  for (const boundary of boundaries) {
+    const completed = s.construction.filter(
+      (j) => !j.done && j.end <= boundary,
+    );
+    accrue(s, boundary, completed.length > 0);
+    for (const j of completed) {
       j.done = true;
+      if (!s.buildings.includes(j.building)) s.buildings.push(j.building);
+      s.audit.push("Completed construction: " + j.building);
     }
+    for (const j of s.jobs)
+      if (!j.done && j.end <= boundary) {
+        move(s, j.output, "Craft " + j.recipe, now);
+        j.done = true;
+      }
+  }
+  for (const j of s.gathering) {
+    if (j.cancelled || j.delivered >= j.total || end <= j.start) continue;
+    const amount =
+      end >= j.end
+        ? j.total
+        : Math.floor(
+            j.total * Math.min(1, (end - j.start) / j.duration) + 1e-9,
+          );
+    const delta = Math.max(0, amount - j.delivered);
+    if (delta) {
+      move(
+        s,
+        { [j.resource]: delta },
+        "Gather " + j.activityId + " " + j.resource,
+        now,
+      );
+      j.delivered = amount;
+    }
+  }
+  s.workClock = end;
   s.clock = now;
+}
+export function activeGathering(s: Save) {
+  return s.gathering.filter(
+    (j) => !j.cancelled && j.delivered < j.total && j.start <= s.workClock,
+  );
+}
+function reflowGathering(s: Save) {
+  for (const resource of resources) {
+    let cursor = s.workClock;
+    for (const j of s.gathering.filter(
+      (j) => j.resource === resource && !j.cancelled && j.delivered < j.total,
+    )) {
+      const remaining = j.end - Math.max(s.workClock, j.start);
+      j.start = cursor - (j.duration - remaining);
+      j.end = cursor + remaining;
+      cursor = j.end;
+    }
+  }
 }
 export function calendar(at: number) {
   const d = new Date(at);
@@ -340,6 +434,7 @@ export function log(
     throw Error("Choose a valid past date (within one year)");
   if (!Number.isFinite(input.amount) || input.amount < 0)
     throw Error("Invalid activity amount");
+  tick(s, now);
   const r = s.rules.activities[input.type];
   if (!r) throw Error("Unknown activity");
   const c = calendar(input.at);
@@ -356,21 +451,56 @@ export function log(
     reward,
     qualified,
     rule: s.rules.version,
+    delivery: "gather",
   });
-  if (qualified) move(s, reward, "Activity " + input.id, now);
+  if (qualified)
+    for (const resource of resources) {
+      const total = reward[resource] || 0;
+      if (total <= 0) continue;
+      const duration = r.gatherHours * HOUR;
+      const start = Math.max(
+        s.workClock,
+        ...s.gathering
+          .filter(
+            (j) =>
+              j.resource === resource && !j.cancelled && j.delivered < j.total,
+          )
+          .map((j) => j.end),
+      );
+      s.gathering.push({
+        id: input.id + ":" + resource,
+        activityId: input.id,
+        resource,
+        total,
+        delivered: 0,
+        start,
+        end: start + duration,
+        duration,
+        rule: s.rules.version,
+      });
+    }
   earn(s, now);
 }
 export function reverse(s: Save, id: string, now: number) {
   const l = s.logs.find((l) => l.id === id);
   if (!l || l.voided) return;
+  tick(s, now);
   l.voided = true;
   const delta: Bag = {};
   for (const r of resources) {
-    const n = l.reward[r] || 0;
+    const n =
+      l.delivery === "gather"
+        ? s.gathering
+            .filter((j) => j.activityId === id && j.resource === r)
+            .reduce((sum, j) => sum + j.delivered, 0)
+        : l.reward[r] || 0;
     const available = Math.min(n, s.inventory[r]);
     delta[r] = -available;
     s.debt[r] = (s.debt[r] || 0) + n - available;
   }
+  for (const job of s.gathering)
+    if (job.activityId === id) job.cancelled = true;
+  reflowGathering(s);
   move(s, delta, "Correction " + id, now);
   s.audit.push(
     "Corrected " +
@@ -379,6 +509,7 @@ export function reverse(s: Save, id: string, now: number) {
   );
 }
 export function queue(s: Save, key: string, id: string, now: number) {
+  tick(s, now);
   const r = s.rules.recipes[key];
   if (!r || !s.buildings.includes(r.building)) throw Error("Workshop needed");
   if (s.jobs.some((j) => j.id === id)) return;
@@ -393,7 +524,7 @@ export function queue(s: Save, key: string, id: string, now: number) {
   spend(s, r.input, "Queue " + key, now);
   const end =
     Math.max(
-      now,
+      s.workClock,
       ...s.jobs
         .filter(
           (j) =>
@@ -435,12 +566,30 @@ export function requirements(s: Save, key: string) {
   return missing;
 }
 export function build(s: Save, key: string, now: number) {
-  if (s.buildings.includes(key)) throw Error("Already built");
+  tick(s, now);
+  if (
+    s.buildings.includes(key) ||
+    s.construction.some((j) => j.building === key && !j.done)
+  )
+    throw Error("Already built or under construction");
   if (requirements(s, key).length)
     throw Error("Real-world credentials still needed");
-  accrue(s, now, true);
-  spend(s, s.rules.buildings[key].cost, "Build " + key, now);
-  s.buildings.push(key);
+  accrue(s, s.workClock, true);
+  const definition = s.rules.buildings[key];
+  spend(s, definition.cost, "Build " + key, now);
+  const start = Math.max(
+    s.workClock,
+    ...s.construction.filter((j) => !j.done).map((j) => j.end),
+  );
+  s.construction.push({
+    id: key + ":" + s.construction.length,
+    building: key,
+    start,
+    end: start + definition.hours * HOUR,
+    cost: structuredClone(definition.cost),
+    rule: s.rules.version,
+    done: false,
+  });
 }
 export function explore(s: Save, now: number) {
   if (!s.buildings.includes("hall2"))
@@ -514,6 +663,9 @@ function inspectRules(r: Rules): string[] {
       !x ||
       !bag(x.reward) ||
       !num(x.minimum) ||
+      !num(x.gatherHours) ||
+      x.gatherHours <= 0 ||
+      x.gatherHours > 720 ||
       !Number.isInteger(x.cap) ||
       x.cap < 1 ||
       x.cap > 20
@@ -544,6 +696,9 @@ function inspectRules(r: Rules): string[] {
     }
     if (
       !bag(b.cost) ||
+      !num(b.hours) ||
+      b.hours <= 0 ||
+      b.hours > 2160 ||
       !b.goals ||
       Object.entries(b.goals).some(
         ([a, n]) => !r.activities[a as Activity] || !num(n),
@@ -610,7 +765,9 @@ export function applyRules(s: Save, r: Rules) {
     throw Error(
       "Keep active recipes and their workshops until their queues finish",
     );
-  accrue(s, s.clock, true);
+  if (s.construction.some((j) => !j.done && !r.buildings[j.building]))
+    throw Error("Keep buildings with active construction");
+  accrue(s, s.workClock, true);
   s.ruleHistory ??= [{ at: s.created, rules: structuredClone(s.rules) }];
   for (const job of s.jobs)
     job.building ??= s.rules.recipes[job.recipe]?.building;
@@ -633,12 +790,30 @@ function inspectSave(raw: unknown): Save {
   if (!raw || typeof raw !== "object") throw Error("Invalid save");
   const x = structuredClone(raw) as Save;
   if ((x.schema as number) === 1) {
-    x.schema = 2;
+    (x as unknown as { schema: number }).schema = 2;
     x.debt = {};
     x.audit = [...(x.audit || []), "Migrated v1 → v2"];
   }
+  if ((x.schema as number) === 2) {
+    x.schema = 3;
+    x.workClock = x.clock;
+    x.gathering = [];
+    x.construction = [];
+    for (const [id, rule] of Object.entries(x.rules.activities))
+      rule.gatherHours ??= seed.activities[id as Activity]?.gatherHours || 4;
+    for (const [id, definition] of Object.entries(x.rules.buildings))
+      definition.hours ??= seed.buildings[id]?.hours || 12;
+    for (const l of x.logs) l.delivery = "instant";
+    x.audit.push(
+      "Migrated v2 → v3: existing resources and buildings retained; future logs fund gathering jobs.",
+    );
+  }
   if (
-    x.schema !== 2 ||
+    x.schema !== 3 ||
+    !Array.isArray(x.gathering) ||
+    !Array.isArray(x.construction) ||
+    !Number.isFinite(x.workClock) ||
+    x.workClock > x.clock ||
     !Array.isArray(x.logs) ||
     !Array.isArray(x.ledger) ||
     !Array.isArray(x.jobs) ||
@@ -687,6 +862,7 @@ function inspectSave(raw: unknown): Save {
     !unique(x.ledger) ||
     x.logs.some(
       (l) =>
+        !["instant", "gather"].includes(l.delivery || "") ||
         !bagValid(l.reward) ||
         !Number.isFinite(l.amount) ||
         l.amount < 0 ||
@@ -707,12 +883,68 @@ function inspectSave(raw: unknown): Save {
       (v) => typeof v !== "string",
     ) ||
     (x.productionAt !== undefined &&
-      (!Number.isFinite(x.productionAt) || x.productionAt > x.clock))
+      (!Number.isFinite(x.productionAt) || x.productionAt > x.workClock))
   )
     throw Error("Damaged save fields");
+  if (!unique(x.gathering) || !unique(x.construction))
+    throw Error("Duplicate work IDs");
+  const times = (j: { start: number; end: number }) =>
+    Number.isFinite(j.start) && Number.isFinite(j.end) && j.end > j.start;
+  for (const j of x.gathering) {
+    const l = x.logs.find((l) => l.id === j.activityId);
+    if (
+      !l ||
+      l.delivery !== "gather" ||
+      !resources.includes(j.resource) ||
+      !times(j) ||
+      !Number.isFinite(j.duration) ||
+      j.duration <= 0 ||
+      Math.abs(j.end - j.start - j.duration) > 1 ||
+      !Number.isFinite(j.total) ||
+      j.total <= 0 ||
+      j.total !== (l.reward[j.resource] || 0) ||
+      !Number.isFinite(j.delivered) ||
+      j.delivered < 0 ||
+      j.delivered > j.total ||
+      Boolean(j.cancelled) !== Boolean(l.voided)
+    )
+      throw Error("Damaged gathering job");
+  }
+  for (const l of x.logs)
+    if (l.delivery === "gather")
+      for (const resource of resources)
+        if (
+          (l.reward[resource] || 0) > 0 &&
+          x.gathering.filter(
+            (j) => j.activityId === l.id && j.resource === resource,
+          ).length !== 1
+        )
+          throw Error("Missing gathering job");
+  for (const j of x.construction)
+    if (
+      !x.rules.buildings[j.building] ||
+      !times(j) ||
+      !bagValid(j.cost) ||
+      typeof j.done !== "boolean" ||
+      (j.done && !x.buildings.includes(j.building))
+    )
+      throw Error("Damaged construction job");
+  const lanes = [
+    ...resources.map((resource) =>
+      x.gathering.filter(
+        (j) => j.resource === resource && !j.cancelled && j.delivered < j.total,
+      ),
+    ),
+    x.construction.filter((j) => !j.done),
+  ];
+  for (const lane of lanes) {
+    const sorted = [...lane].sort((a, b) => a.start - b.start);
+    if (sorted.some((j, i) => i > 0 && j.start < sorted[i - 1].end))
+      throw Error("Overlapping work queue");
+  }
   for (const job of x.jobs)
     job.building ??= x.rules.recipes[job.recipe]?.building;
-  x.productionAt ??= x.clock;
+  x.productionAt ??= x.workClock;
   x.ruleHistory ??= [{ at: x.clock, rules: structuredClone(x.rules) }];
   return x;
 }

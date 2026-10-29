@@ -33,3 +33,7 @@ Reviewed the official repository screenshots for [Unciv](https://raw.githubuserc
 The revised game UI uses **Barlow only**, regular 400 for content and 600 for headings/actions. Shared sizes: 18px headings, 14px content/actions, 12px metadata. Form inputs remain 16px on iPhone to avoid Safari zooming on focus. No italic text or decorative uppercase overlines. There are no numbered construction items or empty left gutters. Building rows align name/action, description, requirements and icon-labelled materials. The single village accomplishment action opens the same logger for every activity, including walks and pushups. Inventory icons are adjacent to resource names. Hall upgrades do not count as additional buildings.
 
 Keep this revision in preview until the user approves deployment.
+
+## Working village layer
+
+Original animated pixel figures are authored in `Villagers.tsx`, with separate tool, body and particle layers. Foresters swing axes, miners use picks, gardeners tend plants, couriers carry supplies and builders hammer. Keep them at roughly a doorway's height (4% map width on desktop, 5% on phone); they must not dwarf buildings. Scaffolds occupy the existing isometric footprint and completed sprites retain their original scale. Earned crews are tied to active finite jobs, while background commons have slower, separately labelled workers. Respect reduced-motion preferences; the work engine, timers and save accounting never depend on animation frames.
