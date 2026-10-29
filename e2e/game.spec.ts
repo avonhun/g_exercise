@@ -207,3 +207,53 @@ test("village fills phone width without horizontal overflow", async ({
     ),
   ).toBe(true);
 });
+
+test("consistent game typography, labelled resources and a single accomplishment action", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  await expect(
+    page.getByRole("button", { name: "Record an accomplishment", exact: true }),
+  ).toHaveCount(1);
+  await expect(
+    page.getByText("Log a little good", { exact: false }),
+  ).toHaveCount(0);
+  await expect(page.locator(".objective-number")).toHaveCount(0);
+  await expect(page.locator(".map-footer")).toContainText("1 building");
+  await expect(page.locator(".chapter")).not.toContainText("SETTLEMENT");
+  const resources = page.getByLabel("Inventory").locator(".resource-name");
+  await expect(resources).toHaveCount(6);
+  for (let i = 0; i < 6; i++) {
+    const icon = await resources.nth(i).locator("svg").boundingBox();
+    const word = await resources.nth(i).locator("span").boundingBox();
+    expect(icon!.x + icon!.width).toBeLessThanOrEqual(word!.x);
+    expect(Math.abs(icon!.y - word!.y)).toBeLessThan(5);
+  }
+  const fontStyles = await page
+    .locator(
+      ".chapter h1,.objective h3,.objective p,.requirements,.objective small",
+    )
+    .evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const s = getComputedStyle(node);
+        return { family: s.fontFamily, size: s.fontSize, style: s.fontStyle };
+      }),
+    );
+  expect(new Set(fontStyles.map((s) => s.family)).size).toBe(1);
+  expect(fontStyles.every((s) => s.style === "normal")).toBe(true);
+  expect(new Set(fontStyles.map((s) => s.size))).toEqual(
+    new Set(["18px", "14px"]),
+  );
+  const article = page.locator(".objective").first();
+  expect((await article.boundingBox())!.height).toBeLessThan(230);
+  await page
+    .getByRole("button", { name: "Record an accomplishment", exact: true })
+    .click();
+  await expect(
+    page.getByLabel("What did you do?").locator("option[value=walk]"),
+  ).toHaveCount(1);
+  await expect(
+    page.getByLabel("What did you do?").locator("option[value=pushups]"),
+  ).toHaveCount(1);
+});

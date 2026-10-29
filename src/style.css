@@ -8,7 +8,7 @@
   --line: #bec1ba;
   --paper: #faf9f4;
   --red: #ae4028;
-  --heading: "Bitter", serif;
+  --heading: "Barlow", sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -147,12 +147,12 @@ h1,
 h2,
 h3 {
   font-family: var(--heading);
-  letter-spacing: -0.6px;
+  letter-spacing: 0;
 }
 h1 {
-  font-size: 36px;
+  font-size: 18px;
   line-height: 1.2;
-  font-weight: 700;
+  font-weight: 600;
   margin: 7px 0 0;
 }
 h1 span {
@@ -165,17 +165,17 @@ h1 span {
   margin-top: 7px;
 }
 h2 {
-  font-size: 25px;
+  font-size: 18px;
   font-weight: 600;
   margin: 8px 0 16px;
 }
 h3 {
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 600;
   margin: 12px 0;
 }
 p {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.55;
 }
 .weather {
@@ -307,7 +307,7 @@ p {
   background: var(--ink);
   color: #e6e7db;
   padding: 9px 14px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .map-footer button {
   border: 0;
@@ -315,7 +315,7 @@ p {
   color: #26343c;
   min-height: 44px;
   padding: 9px 13px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .map-footer button:hover {
   background: #eacb96;
@@ -347,17 +347,17 @@ p {
   border: 0;
 }
 .character h2 {
-  font-size: 28px;
+  font-size: 18px;
   margin: 0 0 7px;
 }
 .character span {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 blockquote {
   border-left: 2px solid #b57c54;
   padding-left: 14px;
-  font-size: 17px;
+  font-size: 14px;
   line-height: 1.55;
   margin: 20px 0 12px;
   font-style: normal;
@@ -392,7 +392,7 @@ blockquote {
 }
 .subtle {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 .objective-grid {
@@ -415,12 +415,6 @@ blockquote {
   margin-right: 0;
   padding-right: 0;
 }
-.objective-number {
-  font:
-    600 13px Barlow,
-    sans-serif;
-  color: var(--red);
-}
 .objective p {
   font-size: 14px;
   color: var(--muted);
@@ -428,13 +422,13 @@ blockquote {
   min-height: 45px;
 }
 .requirements {
-  font-size: 13px;
+  font-size: 14px;
   color: #40583d;
   margin-top: auto;
   font-weight: 600;
 }
 .objective small {
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.7;
   margin-top: 9px;
   color: #59666b;
@@ -444,7 +438,7 @@ blockquote {
   width: 100%;
   text-align: left;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 14px;
 }
 .highlight {
   background: #e3dfcd;
@@ -462,7 +456,7 @@ footer {
   justify-content: space-between;
   gap: 12px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 footer small {
   font-size: 11px;
@@ -521,7 +515,7 @@ footer small {
 }
 .row small {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.7;
   color: var(--muted);
   margin-top: 5px;
@@ -530,7 +524,7 @@ footer small {
   flex-shrink: 0;
 }
 .row > span + span {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 .empty {
@@ -550,7 +544,7 @@ footer small {
   padding: 17px 16px 16px 0;
 }
 .habit > span {
-  font-size: 13px;
+  font-size: 14px;
   text-transform: capitalize;
   display: flex;
   align-items: center;
@@ -565,7 +559,7 @@ footer small {
   font-variant-numeric: tabular-nums;
 }
 .habit small {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
 }
 .badges {
@@ -581,7 +575,7 @@ footer small {
   border: 1px solid #939c91;
   border-left: 4px solid #7c7953;
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: 14px;
   background: #e4e2d2;
 }
 .badges .icon {
@@ -640,7 +634,7 @@ textarea {
   background: var(--paper);
   color: var(--ink);
   padding: 12px;
-  font-size: 16px;
+  font-size: 14px;
 }
 select:focus,
 input:focus,
@@ -664,7 +658,7 @@ textarea:focus {
   margin-top: 16px;
 }
 .discovery small {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
 }
 .warning {
@@ -698,7 +692,7 @@ textarea:focus {
   color: inherit;
   border: 0;
   background: transparent;
-  font-size: 24px;
+  font-size: 18px;
   padding: 0;
   min-width: 32px;
 }
@@ -733,7 +727,7 @@ textarea:focus {
   position: absolute;
   right: 8px;
   top: 7px;
-  font-size: 25px;
+  font-size: 18px;
   border: 0;
   background: transparent;
   padding: 0;
@@ -741,7 +735,7 @@ textarea:focus {
 }
 .modal label {
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   margin: 14px 0;
 }
@@ -758,7 +752,7 @@ textarea:focus {
   border-left: 3px solid #a18757;
   background: #ede9dc;
   padding: 12px;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.7;
   color: #5a6260;
 }
@@ -792,11 +786,11 @@ summary {
     padding-bottom: 15px;
   }
   h1 {
-    font-size: 29px;
+    font-size: 18px;
     margin-top: 5px;
   }
   h1 span {
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 5px;
   }
   .eyebrow {
@@ -827,7 +821,7 @@ summary {
     height: 20px;
   }
   .resource-bar strong {
-    font-size: 19px;
+    font-size: 18px;
   }
   .resource-bar small {
     font-size: 10px;
@@ -858,7 +852,7 @@ summary {
     font-size: 11px;
   }
   .map-footer button {
-    font-size: 12px;
+    font-size: 14px;
   }
   .story-card {
     padding-top: 14px;
@@ -873,7 +867,7 @@ summary {
     height: 100px;
   }
   .character h2 {
-    font-size: 20px;
+    font-size: 18px;
     margin-top: 8px;
   }
   .character span {
@@ -883,10 +877,10 @@ summary {
     margin: 14px 0 10px;
     padding-left: 0;
     border: 0;
-    font-size: 16px;
+    font-size: 14px;
   }
   .story-card p {
-    font-size: 13px;
+    font-size: 14px;
   }
   .story-card .primary {
     clear: both;
@@ -900,7 +894,7 @@ summary {
     padding-bottom: 12px;
   }
   .section-heading h2 {
-    font-size: 22px;
+    font-size: 18px;
   }
   .section-heading > .subtle {
     font-size: 11px;
@@ -917,14 +911,8 @@ summary {
     border-bottom: 1px solid var(--line);
     padding: 19px 0 20px 35px;
   }
-  .objective-number {
-    position: absolute;
-    left: 0;
-    top: 22px;
-    font-size: 12px;
-  }
   .objective h3 {
-    font-size: 20px;
+    font-size: 18px;
     margin: 0 0 10px;
   }
   .objective p {
@@ -942,7 +930,7 @@ summary {
     padding-left: 0;
   }
   .requirements {
-    font-size: 13px;
+    font-size: 14px;
   }
   .bottom-nav {
     justify-content: space-around;
@@ -963,13 +951,13 @@ summary {
     padding: 16px 10px 15px 0;
   }
   .habit strong {
-    font-size: 30px;
+    font-size: 18px;
   }
   .row {
     font-size: 14px;
   }
   .row button {
-    font-size: 12px;
+    font-size: 14px;
     padding: 8px 10px;
   }
   footer {
@@ -987,12 +975,12 @@ summary {
     padding: 25px 20px;
   }
   .modal h2 {
-    font-size: 23px;
+    font-size: 18px;
   }
   .toast {
     bottom: 92px;
     width: calc(100% - 30px);
-    font-size: 13px;
+    font-size: 14px;
   }
   .dev select {
     width: 100%;
@@ -1007,7 +995,7 @@ summary {
     display: none;
   }
   .brand {
-    font-size: 13px;
+    font-size: 14px;
   }
   .map-footer {
     gap: 6px;
@@ -1047,7 +1035,7 @@ summary {
   color: var(--paper);
   border: 1px solid #83908c;
   min-height: 36px;
-  font-size: 12px;
+  font-size: 14px;
   padding: 7px 10px;
   max-width: 150px;
   overflow: hidden;
@@ -1061,7 +1049,7 @@ summary {
   padding: 0 18px 100px;
   max-width: 1200px;
   margin: auto;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
 }
 .account-modal .account-tabs {
@@ -1092,7 +1080,7 @@ summary {
     display: none;
   }
   .brand {
-    font-size: 12px;
+    font-size: 14px;
     gap: 6px;
   }
   .brand-icon .icon {
@@ -1110,5 +1098,546 @@ summary {
   }
   .round {
     width: 35px;
+  }
+}
+
+/* Shared game UI scale: body 14, headings 18, compact metadata 12. */
+:root {
+  --heading: "Barlow", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+h1,
+h2,
+h3 {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+h1 {
+  margin: 0;
+}
+h2,
+h3 {
+  margin: 0 0 8px;
+}
+p,
+blockquote,
+button,
+.button,
+input,
+select,
+textarea {
+  font-size: 14px;
+  font-style: normal;
+  line-height: 1.45;
+}
+p {
+  margin: 8px 0;
+}
+small,
+.subtle,
+.eyebrow,
+.row small,
+.objective small,
+.gentle,
+footer,
+footer small,
+.character span,
+.sync-indicator {
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0;
+}
+.eyebrow {
+  display: none;
+}
+.brand {
+  font:
+    600 18px/1.35 "Barlow",
+    sans-serif;
+}
+.brand small {
+  display: none;
+}
+.topbar {
+  height: 56px;
+  border-bottom-width: 1px;
+}
+.brand-icon .icon {
+  height: 28px;
+  width: 25px;
+}
+.chapter {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 0 12px;
+}
+.weather {
+  position: static;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.weather .icon {
+  width: 16px;
+  height: 16px;
+}
+main {
+  padding-top: 18px;
+}
+.resource-bar {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+  padding: 10px 0;
+  margin-bottom: 8px;
+  gap: 8px 16px;
+}
+.resource-bar > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  font-size: 14px;
+  min-width: 0;
+  padding: 0;
+}
+.resource-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  font-size: 14px;
+}
+.resource-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  text-transform: capitalize;
+  font-size: inherit;
+  color: inherit;
+}
+.resource-name .icon {
+  height: 16px;
+  width: 16px;
+}
+.resource-name.wood,
+.resource-name.stone {
+  color: #766041;
+}
+.resource-name.ore {
+  color: #566a77;
+}
+.resource-name.momentum {
+  color: #9d3a25;
+}
+.resource-name.food,
+.resource-name.herbs {
+  color: #52673e;
+}
+.resource-name > span {
+  color: var(--ink);
+}
+.resource-amounts {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  vertical-align: middle;
+}
+.resource-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.map-footer {
+  padding: 8px 12px;
+  font-size: 12px;
+  gap: 8px;
+}
+.map-footer button {
+  font-size: 14px;
+  background: var(--red);
+  border: 1px solid #80301f;
+  color: #fff;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+.map-footer button:hover {
+  background: #8d341f;
+}
+.story-card {
+  padding: 12px 0 0;
+  border-top: 1px solid var(--line);
+}
+.character {
+  margin: 0;
+  gap: 12px;
+}
+.character h2 {
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+.character span {
+  display: block;
+}
+.portrait {
+  width: 64px;
+  height: 80px;
+}
+.story-card blockquote {
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 400;
+  margin: 12px 0 8px;
+  padding: 0;
+  border: 0;
+}
+.story-card p {
+  font-size: 14px;
+  margin: 8px 0;
+  color: var(--muted);
+}
+.section-heading {
+  margin: 20px 0 0;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--line);
+}
+.section-heading h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.objective-grid {
+  border: 0;
+}
+.objective,
+.objective:last-child {
+  padding: 14px 16px 14px 0;
+  margin-right: 16px;
+}
+.objective h3 {
+  font-size: 18px;
+  margin: 0 0 6px;
+}
+.objective p {
+  font-size: 14px;
+  min-height: 0;
+  margin: 0 0 10px;
+}
+.objective .requirements {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.objective small {
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+.objective button {
+  font-size: 14px;
+  min-height: 44px;
+  margin-top: auto;
+}
+.objective button .action-arrow {
+  width: 12px;
+  height: 12px;
+}
+.row small,
+.modal label,
+.modal > p,
+.log-rule {
+  font-size: 14px;
+  font-weight: 400;
+}
+.modal h2 {
+  font-size: 18px;
+  margin: 0 30px 12px 0;
+}
+.modal .eyebrow {
+  display: none;
+}
+.habit strong {
+  font:
+    600 18px/1.35 "Barlow",
+    sans-serif;
+}
+.bottom-nav button {
+  font-size: 12px;
+  font-weight: 400;
+}
+.badges > span {
+  font-size: 12px;
+}
+.objective:has(> .eyebrow) {
+  padding-left: 0;
+}
+@media (max-width: 760px) {
+  main {
+    padding-top: 14px;
+  }
+  .brand {
+    font-size: 16px;
+  }
+  .topbar {
+    height: 52px;
+  }
+  .brand-icon .icon {
+    width: 22px;
+    height: 24px;
+  }
+  .chapter {
+    padding-bottom: 10px;
+  }
+  .chapter h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  .resource-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 16px;
+    padding: 10px 0;
+    margin-bottom: 8px;
+  }
+  .resource-bar > div {
+    flex-direction: row;
+    gap: 6px;
+  }
+  .resource-name {
+    gap: 4px;
+  }
+  .resource-name .icon {
+    width: 14px;
+    height: 14px;
+  }
+  .resource-bar .resource-name,
+  .resource-count {
+    font-size: 12px;
+  }
+  .village-layout {
+    gap: 16px;
+  }
+  .map-footer {
+    padding: 8px 18px;
+  }
+  .map-footer button {
+    font-size: 14px;
+    max-width: 75%;
+  }
+  .story-card {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 0 12px;
+    padding-top: 0;
+    border: 0;
+  }
+  .character {
+    display: block;
+    float: none;
+    grid-column: 1;
+    grid-row: 1 / 3;
+    margin: 0;
+  }
+  .character h2 {
+    font-size: 14px;
+    margin: 6px 0 0;
+  }
+  .character span {
+    display: none;
+  }
+  .portrait {
+    width: 64px;
+    height: 80px;
+  }
+  .story-card blockquote {
+    grid-column: 2;
+    margin: 0;
+  }
+  .story-card p {
+    grid-column: 2;
+    margin: 6px 0 0;
+    font-size: 12px;
+  }
+  .objective,
+  .objective:last-child {
+    padding: 12px 0;
+    margin: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .objective h3 {
+    font-size: 18px;
+    margin: 0 0 6px;
+  }
+  .objective p {
+    margin-bottom: 8px;
+  }
+  .objective .requirements {
+    margin-bottom: 8px;
+  }
+  .objective small {
+    margin-bottom: 10px;
+  }
+  .objective button {
+    margin-top: 0;
+    width: auto;
+    align-self: flex-start;
+    gap: 16px;
+    padding: 8px 12px;
+  }
+  .section-heading {
+    margin-top: 20px;
+    padding-bottom: 10px;
+  }
+  .section-heading h2 {
+    font-size: 18px;
+  }
+  .modal h2 {
+    font-size: 18px;
+  }
+  .bottom-nav button {
+    font-size: 12px;
+  }
+  .row button {
+    font-size: 14px;
+  }
+}
+@media (max-width: 360px) {
+  .resource-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .brand {
+    font-size: 15px;
+  }
+  .map-footer {
+    padding: 8px 12px;
+  }
+  .map-footer button {
+    font-size: 12px;
+  }
+  .weather {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+@media (min-width: 761px) {
+  .village-sidebar .objective-grid {
+    display: block;
+  }
+  .village-sidebar .objective,
+  .village-sidebar .objective:last-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 5px 10px;
+    padding: 12px 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .village-sidebar .objective h3 {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+    align-self: center;
+  }
+  .village-sidebar .objective button {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    width: auto;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  .village-sidebar .objective p {
+    grid-column: 1/-1;
+    grid-row: 2;
+    margin: 0;
+  }
+  .village-sidebar .objective .requirements {
+    grid-column: 1/-1;
+    grid-row: 3;
+    margin: 0;
+  }
+  .village-sidebar .objective small {
+    grid-column: 1/-1;
+    grid-row: 4;
+    margin: 0;
+  }
+}
+.village-sidebar .objective-grid {
+  display: block;
+}
+.village-sidebar .objective,
+.village-sidebar .objective:last-child {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 10px;
+  padding: 12px 0;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+.village-sidebar .objective h3 {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  align-self: center;
+}
+.village-sidebar .objective button {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  width: auto;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+.village-sidebar .objective p {
+  grid-column: 1/-1;
+  grid-row: 2;
+  margin: 0;
+}
+.village-sidebar .objective .requirements {
+  grid-column: 1/-1;
+  grid-row: 3;
+  margin: 0;
+}
+.village-sidebar .objective small {
+  grid-column: 1/-1;
+  grid-row: 4;
+  margin: 0;
+}
+main {
+  padding-bottom: 24px;
+}
+.sync-indicator {
+  padding: 0 32px calc(88px + env(safe-area-inset-bottom));
+}
+@media (max-width: 760px) {
+  main {
+    padding-bottom: 18px;
+  }
+  .sync-indicator {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 }

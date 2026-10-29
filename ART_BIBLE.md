@@ -25,3 +25,11 @@ Source masters are retained under `art/source/` (original image generation for t
 The interface takes the form of a field almanac: ink-blue `#26343c`, vermilion `#ae4028`, ochre `#d7b478` and neutral paper `#eeede8`. Use Bitter slab-serif 600/700 for headings and Barlow 400/600 for reading and labels. Both are self-hosted, OFL-licensed, bundled and precached; license copies are under `public/licenses/`. No runtime font requests.
 
 `Icon.tsx` contains a single original 24-unit woodcut-inspired icon family. Resource, navigation, weather and action marks use consistent silhouettes without platform emoji. Corners are square, sections separated with rules, and buttons use a firm lower edge rather than floating cards. On phones, the village is deliberately full bleed; its surrounding text retains an 18px inset. Do not restore a duplicate framed map heading or the earlier green rounded-card treatment.
+
+## Interface consistency revision (unpublished)
+
+Reviewed the official repository screenshots for [Unciv](https://raw.githubusercontent.com/yairm210/Unciv/master/extraImages/GithubPreviewImage.jpg) and [Freeciv-web](https://raw.githubusercontent.com/freeciv/freeciv-web/develop/scripts/freeciv-web-screenshot.png). The relevant references are their consistent sans-serif text, compact construction/actions and contiguous resource icon/value groups, not their map artwork or desktop density. Farm RPG's site was inaccessible from this environment; it was not used as a verified visual reference.
+
+The revised game UI uses **Barlow only**, regular 400 for content and 600 for headings/actions. Shared sizes: 18px headings, 14px content/actions, 12px metadata. Form inputs remain 16px on iPhone to avoid Safari zooming on focus. No italic text or decorative uppercase overlines. There are no numbered construction items or empty left gutters. Building rows align name/action, description, requirements and icon-labelled materials. The single village accomplishment action opens the same logger for every activity, including walks and pushups. Inventory icons are adjacent to resource names. Hall upgrades do not count as additional buildings.
+
+Keep this revision in preview until the user approves deployment.

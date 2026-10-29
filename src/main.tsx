@@ -29,8 +29,7 @@ import {
 import { backup, download, load, persist, recovery, restore } from "./store";
 import { World, Portrait } from "./World";
 import { Icon } from "./Icon";
-import "@fontsource/bitter/latin-600.css";
-import "@fontsource/bitter/latin-700.css";
+import { ResourceName, ResourceAmounts } from "./Resources";
 import "@fontsource/barlow/latin-400.css";
 import "@fontsource/barlow/latin-600.css";
 import "./style.css";
@@ -200,10 +199,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
           <span className="brand-icon">
             <Icon name="crest" />
           </span>
-          <span>
-            THE LIVING WORLD
-            <small>A chronicle of small beginnings</small>
-          </span>
+          <span>The Living World</span>
         </a>
         <div className="header-controls">
           {accountControl}
@@ -218,10 +214,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
       </header>
       <main>
         <section className="chapter">
-          <span className="eyebrow">SETTLEMENT No. 01</span>
-          <h1>
-            Greenhaven Valley<span>Chapter I · Taking root</span>
-          </h1>
+          <h1>Greenhaven Valley</h1>
           <div className="weather">
             <Icon name="sun" /> <span>Clear skies</span>
           </div>
@@ -252,11 +245,10 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
             )
             .map((r) => (
               <div key={r}>
-                <span className={"resource-icon " + r}>
-                  <Icon name={r} />
+                <ResourceName name={r} />
+                <span className="resource-count">
+                  {Math.floor(save.inventory[r])}
                 </span>
-                <strong>{Math.floor(save.inventory[r])}</strong>
-                <small>{r}</small>
               </div>
             ))}
         </div>
@@ -273,87 +265,78 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 />
                 <div className="map-footer">
                   <span>
-                    <i className="dot" /> {save.buildings.length} places to call
-                    home
+                    {save.buildings.filter((id) => id !== "hall2").length}{" "}
+                    {save.buildings.filter((id) => id !== "hall2").length === 1
+                      ? "building"
+                      : "buildings"}
                   </span>
-                  <button
-                    onClick={() => {
-                      setType("walk");
-                      openLogger();
-                    }}
-                  >
-                    + Log a little good
+                  <button className="primary" onClick={openLogger}>
+                    Record an accomplishment
                   </button>
                 </div>
               </section>
-              <aside className="story-card">
-                <span className="eyebrow">THE VILLAGE KEEPER</span>
-                <div className="character">
-                  <Portrait />
-                  <div>
-                    <h2>Mara</h2>
-                    <span>Every beginning matters.</span>
-                  </div>
-                </div>
-                <blockquote>
-                  “A village grows much like a good habit. A little care, a
-                  little patience—and one day, you look up to find something
-                  wonderful.”
-                </blockquote>
-                <p>
-                  Your walks, shared meals, and hard-earned workouts give this
-                  place its life.
-                </p>
-                <button className="primary" onClick={() => openLogger()}>
-                  Record an accomplishment
-                </button>
-                <small className="gentle">Small steps count here, too.</small>
-              </aside>
-            </div>
-            <section className="section-heading">
-              <div>
-                <span className="eyebrow">THE VILLAGE LEDGER</span>
-                <h2>Make yourself at home</h2>
-              </div>
-              <span className="subtle">At your own pace</span>
-            </section>
-            <div className="objective-grid">
-              {visibleBuildings
-                .filter(([id]) => !save.buildings.includes(id))
-                .slice(0, 3)
-                .map(([id, b], i) => (
-                  <article className="objective" key={id}>
-                    <span className="objective-number">0{i + 1}</span>
-                    <h3>{b.name}</h3>
-                    <p>
-                      {id === "sawmill"
-                        ? "Give fallen timber a new purpose."
-                        : id === "farm"
-                          ? "Good food helps a community flourish."
-                          : id === "blacksmith"
-                            ? "The warmth of a forge begins with showing up."
-                            : "Create a place for the next chapter."}
-                    </p>
-                    <div className="requirements">
-                      {requirements(save, id).length
-                        ? requirements(save, id).join(" · ")
-                        : "Accomplishments earned"}
+              <aside className="village-sidebar">
+                <section className="story-card">
+                  <div className="character">
+                    <Portrait />
+                    <div>
+                      <h2>Mara</h2>
+                      <span>Village keeper</span>
                     </div>
-                    <small>{bag(b.cost)}</small>
-                    <button
-                      onClick={() =>
-                        action(
-                          (s) => build(s, id, Date.now()),
-                          b.name + " is now part of the village.",
-                        )
-                      }
-                      disabled={requirements(save, id).length > 0}
-                    >
-                      Build {b.name.toLowerCase()}{" "}
-                      <Icon name="arrow" className="action-arrow" />
-                    </button>
-                  </article>
-                ))}
+                  </div>
+                  <blockquote>
+                    “A village grows much like a good habit. A little care, a
+                    little patience—and one day, you look up to find something
+                    wonderful.”
+                  </blockquote>
+                  <p>
+                    Your walks, shared meals, and hard-earned workouts give this
+                    place its life.
+                  </p>
+                </section>
+                <section className="section-heading">
+                  <h2>Construction</h2>
+                </section>
+                <div className="objective-grid">
+                  {visibleBuildings
+                    .filter(([id]) => !save.buildings.includes(id))
+                    .slice(0, 3)
+                    .map(([id, b]) => (
+                      <article className="objective" key={id}>
+                        <h3>{b.name}</h3>
+                        <p>
+                          {id === "sawmill"
+                            ? "Turns wood into planks."
+                            : id === "farm"
+                              ? "Produces a small daily food supply."
+                              : id === "blacksmith"
+                                ? "Turns ore into metal fittings."
+                                : "Adds new options to the village."}
+                        </p>
+                        <div className="requirements">
+                          {requirements(save, id).length
+                            ? requirements(save, id).join(" · ")
+                            : "Accomplishments earned"}
+                        </div>
+                        <small>
+                          <ResourceAmounts amounts={b.cost} />
+                        </small>
+                        <button
+                          aria-label={"Build " + b.name.toLowerCase()}
+                          onClick={() =>
+                            action(
+                              (s) => build(s, id, Date.now()),
+                              b.name + " is now part of the village.",
+                            )
+                          }
+                          disabled={requirements(save, id).length > 0}
+                        >
+                          Build
+                        </button>
+                      </article>
+                    ))}
+                </div>
+              </aside>
             </div>
             {save.buildings.includes("hall2") && !save.discoveries.length && (
               <article className="discovery">
@@ -420,11 +403,11 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   </span>
                   <h3>{r.name}</h3>
                   <p>
-                    {bag(r.input)}
+                    <ResourceAmounts amounts={r.input} />
                     <br />
                     <Icon name="down" className="craft-arrow" />
                     <br />
-                    {bag(r.output)}
+                    <ResourceAmounts amounts={r.output} />
                   </p>
                   <small>{r.hours} hours per batch</small>
                   <button
@@ -475,7 +458,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                       : requirements(save, id).join(" · ") ||
                         "Credentials complete"}
                     <br />
-                    {!save.buildings.includes(id) && bag(b.cost)}
+                    {!save.buildings.includes(id) && (
+                      <ResourceAmounts amounts={b.cost} />
+                    )}
                   </small>
                 </div>
                 {!save.buildings.includes(id) && (
@@ -503,7 +488,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 <h2>Your journal</h2>
               </div>
               <button className="primary" onClick={() => openLogger()}>
-                + Add a log
+                Record an accomplishment
               </button>
             </div>
             <p className="subtle">
@@ -611,9 +596,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   <h3>{o.name}</h3>
                   <p>{o.text}</p>
                   <small>
-                    Deliver {bag(o.cost)}
+                    Deliver <ResourceAmounts amounts={o.cost} />
                     <br />
-                    Receive {bag(o.reward)}
+                    Receive <ResourceAmounts amounts={o.reward} />
                   </small>
                   <button
                     disabled={save.orders.includes(o.id)}
