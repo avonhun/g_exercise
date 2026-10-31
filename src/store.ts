@@ -18,6 +18,12 @@ export function load(): { save: Save; error?: string } {
     const save = raw ? migrate(raw) : fresh(Date.now());
     if (text && raw.schema < 3 && !localStorage.getItem(KEY + ".pre-v3"))
       localStorage.setItem(KEY + ".pre-v3", text);
+    if (
+      text &&
+      (raw.contentVersion ?? 1) < 2 &&
+      !localStorage.getItem(KEY + ".pre-village2")
+    )
+      localStorage.setItem(KEY + ".pre-village2", text);
     return { save };
   } catch {
     return {
@@ -67,7 +73,10 @@ export function recovery() {
 
 export function migrationBackup() {
   try {
-    return localStorage.getItem(KEY + ".pre-v3");
+    return (
+      localStorage.getItem(KEY + ".pre-village2") ||
+      localStorage.getItem(KEY + ".pre-v3")
+    );
   } catch {
     return null;
   }

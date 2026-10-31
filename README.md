@@ -20,13 +20,14 @@ npm run dev -- --port 5173
 
 ## Playable now
 
-- Detailed pixel-art landscape, six coordinated building sprites and a storybook portrait; five navigation views and mobile layouts.
-- Manual, dated gym, soccer, hike, cardio, cycling, short walk, pushup, meal, plants, and mindful snack logs. Duration/repetitions, notes, daily reward caps, stable event IDs, corrections, and visible history.
-- Small walks and nightly pushups count as useful habits. They do not automatically count as gym/hike credentials. Explicit home-strength goal selection offers a longer consistency alternative.
+- Detailed isometric landscape, smaller building sprites, surrounding shops and homes, painted animated workers, walking residents, and six navigation views. Timber/parchment/forest UI with a distinct palette for an already-discovered frontier. See [VILLAGE_UPDATE.md](VILLAGE_UPDATE.md) for the current preview.
+- Manual, dated optional weightlifting, soccer, hike, cardio, cycling, short walk, pushup, meal, plants, and mindful snack logs. Duration/repetitions, notes, daily reward caps, stable event IDs, corrections, and visible history.
+- Small walks and nightly pushups count as useful habits. They do not automatically count as hikes or cardio. Lifting contributes ore without becoming a construction requirement.
 - Sawmill, forge, garden, kitchen, hall upgrade; four recipes with serial three-job workshop queues; capped passive gathering; offline job completion.
-- Two finite commissions and a bounded merchant exchange; real accomplishment gates cannot be purchased with supplies.
+- Two finite commissions with explicit rewards, purposes and visible village furnishings; a bounded merchant exchange. Real accomplishment gates cannot be purchased with supplies.
+- Searchable resource Guide with current saved rules, activity rewards, building uses and instructions; hidden discoveries stay hidden.
 - An earned exploration encounter, concealed until its prerequisite is met. This is the regional expansion foundation, not a simulated second settlement.
-- Versioned local saves, exported backups, restore/import, correction debts, resource ledger, rule audit, permanent milestones, and v1-to-v2 migration.
+- Versioned local saves, exported backups, restore/import, correction debts, resource ledger, rule audit, permanent milestones, and v1/v2-to-v3 migration plus a save-preserving content update.
 - Gated local developer console: editable rule JSON, validation, explicit spoiler inspection, local diagnostics, and 30/60/90-day isolated economy projections. Rule changes apply prospectively.
 - Manifest, PNG icons, and production asset precache for offline use after first successful load.
 
@@ -44,7 +45,7 @@ The starter balance is provisional. The hall is an early milestone, not a full c
 
 `src/engine.ts` owns deterministic state transitions and data-defined seed rules. It has no React or browser dependency. Callers pass time and stable IDs. State changes run against a cloned save in the UI; failed actions are not committed. Normalized activity records provide a future native-import boundary, without implementing a native adapter prematurely.
 
-`src/store.ts` owns browser persistence and backup/download operations. Save schema and rule versions are independent. `migrate` validates imported snapshots and upgrades v1 to v2. Inventory changes have resource transactions; corrections mark the original record and append a reversal transaction/audit entry. Credentials are durable, independent of current log counts. This is a snapshot plus audit ledger, not a complete event-sourced database.
+`src/store.ts` owns browser persistence and backup/download operations. Save schema and rule versions are independent. `migrate` validates imported snapshots and upgrades older structural and content versions without rewriting earned progress. Inventory changes have resource transactions; corrections mark the original record and append a reversal transaction/audit entry. Credentials are durable, independent of current log counts. This is a snapshot plus audit ledger, not a complete event-sourced database.
 
 `src/World.tsx` composes the landscape and independent, selectable building sprites. `src/main.tsx` contains the playable UI and local console. `vite.config.ts` injects production asset URLs into the service-worker precache. See `ART_BIBLE.md` for asset constraints and `IMPLEMENTATION_PLAN.md` for scope decisions.
 
@@ -60,6 +61,8 @@ E2E tests use the installed Chromium at `/usr/bin/chromium`, starting a producti
 
 ## Deployment
 
+The existing public site deploys from GitHub `main` to its separate Vercel `world-pwa` project. Keep preview work off `main` until the user approves publication.
+
 Serve `dist/` over HTTPS at the root of `world.bballstatistics.com`. Hosting and DNS are not configured by this repository. Use short/no-cache headers for `index.html`, `sw.js`, and the manifest; hashed `/assets/` files can be immutable. No environment secrets are required. A new worker activates after old pages close; reopen the app to adopt a new version. Do not delete browser saves when updating assets.
 
 
@@ -69,6 +72,6 @@ Garden construction settles production before enabling food; strength alternativ
 
 Offline shell loading is now cache-first per build: a worker cannot mix new network HTML with old offline assets, and only known app files are cached. All art is precached. `vercel.json` sets static build output, HTTPS-host response security headers, immutable hashed assets, and no-cache service-worker/HTML behavior. No remote deployment is established merely by adding that file. See `DEPLOYMENT.md`.
 
-## Timed work revision (unpublished)
+## Timed work revision (0.4)
 
 Activity logs now fund finite gathering jobs instead of immediately depositing their entire reward. Buildings use a timed shared construction crew. See [TIMED_WORK.md](TIMED_WORK.md) for durations, queue semantics, schema-3 migration, corrections, offline limits and preview validation. Existing stocks, milestones and completed buildings are preserved. The developer console controls future gathering/construction times without resetting the world.

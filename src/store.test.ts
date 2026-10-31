@@ -74,3 +74,17 @@ it("rejects a late timer write after the active account changes", async () => {
   expect(() => store.persist(a, key)).toThrow("no longer active");
   expect(data.get(store.KEY)).toBeUndefined();
 });
+
+it("archives the original v0.4 export once before applying the village update", async () => {
+  const { default: old } = await import("../e2e/fixtures/v04-world.json");
+  const store = await import("./store");
+  const raw = JSON.stringify(old);
+  data.set(store.KEY, raw);
+  const loaded = store.load();
+  expect(loaded.error).toBeUndefined();
+  expect(store.migrationBackup()).toBe(raw);
+  expect(loaded.save.logs).toEqual(old.logs);
+  store.persist(loaded.save);
+  store.load();
+  expect(store.migrationBackup()).toBe(raw);
+});

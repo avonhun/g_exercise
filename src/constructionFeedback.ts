@@ -4,12 +4,8 @@ export function constructionFeedback(save: Save, id: string) {
   const job = save.construction.find((j) => j.building === id && !j.done);
   if (job)
     return job.start > save.workClock
-      ? "Queued — starts in " +
-          durationLabel(job.start - save.workClock) +
-          ". Materials are already reserved."
-      : "Building — " +
-          durationLabel(job.end - save.workClock) +
-          " remaining. Materials are already reserved.";
+      ? "Queued — starts in " + durationLabel(job.start - save.workClock) + "."
+      : "Building — " + durationLabel(job.end - save.workClock) + " remaining.";
   const missingGoals = requirements(save, id).map((requirement) => {
     const count = save.rules.buildings[id].goals.walk;
     if (count && requirement === `${count} ${activityNames.walk}`) {

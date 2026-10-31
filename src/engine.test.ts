@@ -43,13 +43,13 @@ describe("activity and permanent accomplishments", () => {
     expect(s.inventory.ore).toBe(40);
     expect(count(s, "gym")).toBe(1);
   });
-  it("does not convert soccer or resources into strength credit", () => {
+  it("does not convert soccer or resources into the blacksmith cardio accomplishment", () => {
     const s = fresh(t);
     add(s, "soccer");
     s.inventory.wood = 10000;
     s.inventory.stone = 10000;
     expect(() => build(s, "blacksmith", t)).toThrow("credentials");
-    expect(requirements(s, "blacksmith")).toContain("1 Gym session");
+    expect(requirements(s, "blacksmith")).toContain("1 Treadmill / cardio");
   });
   it("small activities reward daily consistency without becoming gym or hikes", () => {
     const s = fresh(t);
@@ -136,6 +136,7 @@ describe("accounting and time", () => {
   it("caps offline production at 72h without destroying progress across a missed month", () => {
     const s = fresh(t);
     add(s, "gym");
+    add(s, "cardio", t, "cardio-build", 15);
     build(s, "blacksmith", t);
     const before = structuredClone(s);
     tick(s, t + 28 * DAY);
@@ -237,7 +238,7 @@ describe("rules, saves and isolated simulation", () => {
 });
 
 describe("starter campaign reachability", () => {
-  it("reaches the concealed encounter through earned activities and production without grants", () => {
+  it("reaches the concealed encounter without lifting, through earned activities and production", () => {
     const s = fresh(t);
     let serial = 0;
     for (let d = 0; d <= 28; d++) {
@@ -248,7 +249,8 @@ describe("starter campaign reachability", () => {
       activity("walk", 10);
       activity("meal", 0);
       activity("plants", 0);
-      if ([7, 14, 21].includes(d)) activity("gym", 0);
+      activity("pushups", 5);
+      if ([7, 14, 21].includes(d)) activity("cardio", 20);
       if (d % 7 === 0) activity("soccer", 0);
       if (d === 0 || d === 14) activity("hike", 60);
       for (const id of ["sawmill", "farm", "blacksmith", "kitchen", "hall2"])
@@ -338,11 +340,13 @@ describe("review regressions", () => {
     tick(s, t + 7 * 3600000);
     expect(s.inventory.food - food).toBeCloseTo(8 / 24);
   });
-  it("home strength cannot be bypassed with an old gym streak", () => {
+  it("legacy strength settings never impose a strength requirement on the hall", () => {
     const s = fresh(t);
     s.rules.strengthMode = "home";
     s.credentials["gym:weeks3"] = t;
-    expect(requirements(s, "hall2").join(" ")).toContain("home strength days");
+    expect(requirements(s, "hall2").join(" ")).not.toMatch(
+      /strength|gym|weights/i,
+    );
   });
   it("limits backdating relative to now rather than world creation", () => {
     const s = fresh(t - 800 * DAY);

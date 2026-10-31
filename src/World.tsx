@@ -1,6 +1,7 @@
 import { activeGathering, type Save } from "./engine";
 import { fraction } from "./work";
 import { Villager } from "./Villagers";
+import { SettlementLife } from "./SettlementLife";
 import landscape from "./assets/greenhaven.webp";
 import portrait from "./assets/mara.webp";
 import hall from "./assets/hall.webp";
@@ -10,10 +11,10 @@ import blacksmith from "./assets/blacksmith.webp";
 import kitchen from "./assets/kitchen.webp";
 import farm from "./assets/farm.webp";
 const places = [
-  { id: "hall", name: "Gathering hall", x: 49, y: 45, art: hall },
+  { id: "hall", name: "Gathering hall", x: 49, y: 43, art: hall },
   { id: "farm", name: "Kitchen garden", x: 68, y: 35, art: farm },
   { id: "sawmill", name: "Sawmill", x: 30, y: 57, art: sawmill },
-  { id: "blacksmith", name: "Blacksmith", x: 69, y: 59, art: blacksmith },
+  { id: "blacksmith", name: "Blacksmith", x: 65, y: 61, art: blacksmith },
   { id: "kitchen", name: "Village kitchen", x: 49, y: 76, art: kitchen },
 ];
 export function World({
@@ -37,6 +38,7 @@ export function World({
         width="1440"
         height="960"
       />
+      <SettlementLife save={save} />
       {places
         .filter((p) => save.buildings.includes(p.id))
         .map((p) => (

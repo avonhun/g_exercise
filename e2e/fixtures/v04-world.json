@@ -1,0 +1,1574 @@
+{
+  "schema": 3,
+  "workClock": 1793365200000,
+  "gathering": [
+    {
+      "id": "fixture-0:wood",
+      "activityId": "fixture-0",
+      "resource": "wood",
+      "total": 7,
+      "delivered": 7,
+      "start": 1793188800000,
+      "end": 1793196000000,
+      "duration": 7200000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-0:momentum",
+      "activityId": "fixture-0",
+      "resource": "momentum",
+      "total": 1,
+      "delivered": 1,
+      "start": 1793188800000,
+      "end": 1793196000000,
+      "duration": 7200000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-1:food",
+      "activityId": "fixture-1",
+      "resource": "food",
+      "total": 12,
+      "delivered": 12,
+      "start": 1793188800000,
+      "end": 1793203200000,
+      "duration": 14400000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-2:ore",
+      "activityId": "fixture-2",
+      "resource": "ore",
+      "total": 40,
+      "delivered": 40,
+      "start": 1793188800000,
+      "end": 1793217600000,
+      "duration": 28800000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-3:herbs",
+      "activityId": "fixture-3",
+      "resource": "herbs",
+      "total": 4,
+      "delivered": 4,
+      "start": 1793188800000,
+      "end": 1793196000000,
+      "duration": 7200000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-4:wood",
+      "activityId": "fixture-4",
+      "resource": "wood",
+      "total": 45,
+      "delivered": 45,
+      "start": 1793196000000,
+      "end": 1793224800000,
+      "duration": 28800000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-4:discovery",
+      "activityId": "fixture-4",
+      "resource": "discovery",
+      "total": 10,
+      "delivered": 10,
+      "start": 1793188800000,
+      "end": 1793217600000,
+      "duration": 28800000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-5:momentum",
+      "activityId": "fixture-5",
+      "resource": "momentum",
+      "total": 50,
+      "delivered": 50,
+      "start": 1793196000000,
+      "end": 1793217600000,
+      "duration": 21600000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-6:ore",
+      "activityId": "fixture-6",
+      "resource": "ore",
+      "total": 40,
+      "delivered": 40,
+      "start": 1793275200000,
+      "end": 1793304000000,
+      "duration": 28800000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-7:food",
+      "activityId": "fixture-7",
+      "resource": "food",
+      "total": 12,
+      "delivered": 12,
+      "start": 1793275200000,
+      "end": 1793289600000,
+      "duration": 14400000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-8:food",
+      "activityId": "fixture-8",
+      "resource": "food",
+      "total": 12,
+      "delivered": 12,
+      "start": 1793289600000,
+      "end": 1793304000000,
+      "duration": 14400000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-9:herbs",
+      "activityId": "fixture-9",
+      "resource": "herbs",
+      "total": 4,
+      "delivered": 4,
+      "start": 1793275200000,
+      "end": 1793282400000,
+      "duration": 7200000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-10:wood",
+      "activityId": "fixture-10",
+      "resource": "wood",
+      "total": 45,
+      "delivered": 45,
+      "start": 1793275200000,
+      "end": 1793304000000,
+      "duration": 28800000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-10:discovery",
+      "activityId": "fixture-10",
+      "resource": "discovery",
+      "total": 10,
+      "delivered": 10,
+      "start": 1793275200000,
+      "end": 1793304000000,
+      "duration": 28800000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-11:ore",
+      "activityId": "fixture-11",
+      "resource": "ore",
+      "total": 40,
+      "delivered": 5,
+      "start": 1793361600000,
+      "end": 1793390400000,
+      "duration": 28800000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-12:food",
+      "activityId": "fixture-12",
+      "resource": "food",
+      "total": 12,
+      "delivered": 3,
+      "start": 1793361600000,
+      "end": 1793376000000,
+      "duration": 14400000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-13:wood",
+      "activityId": "fixture-13",
+      "resource": "wood",
+      "total": 7,
+      "delivered": 3,
+      "start": 1793361600000,
+      "end": 1793368800000,
+      "duration": 7200000,
+      "rule": 2
+    },
+    {
+      "id": "fixture-13:momentum",
+      "activityId": "fixture-13",
+      "resource": "momentum",
+      "total": 1,
+      "delivered": 0,
+      "start": 1793361600000,
+      "end": 1793368800000,
+      "duration": 7200000,
+      "rule": 2
+    }
+  ],
+  "construction": [
+    {
+      "id": "sawmill:0",
+      "building": "sawmill",
+      "start": 1793188800000,
+      "end": 1793203200000,
+      "cost": {
+        "wood": 20,
+        "stone": 10
+      },
+      "rule": 2,
+      "done": true
+    },
+    {
+      "id": "farm:1",
+      "building": "farm",
+      "start": 1793203200000,
+      "end": 1793210400000,
+      "cost": {
+        "wood": 15,
+        "stone": 5
+      },
+      "rule": 2,
+      "done": true
+    },
+    {
+      "id": "blacksmith:2",
+      "building": "blacksmith",
+      "start": 1793246400000,
+      "end": 1793275200000,
+      "cost": {
+        "wood": 30,
+        "stone": 20
+      },
+      "rule": 2,
+      "done": true
+    },
+    {
+      "id": "kitchen:3",
+      "building": "kitchen",
+      "start": 1793361600000,
+      "end": 1793390400000,
+      "cost": {
+        "planks": 15,
+        "stone": 15
+      },
+      "rule": 2,
+      "done": false
+    }
+  ],
+  "created": 1793188800000,
+  "clock": 1793365200000,
+  "productionAt": 1793365200000,
+  "ruleHistory": [
+    {
+      "at": 1793188800000,
+      "rules": {
+        "version": 1,
+        "offlineHours": 72,
+        "strengthMode": "gym",
+        "strengthCount": 3,
+        "mealDefinition": "A satisfying meal with a protein source, plants, and enough food for you.",
+        "activities": {
+          "gym": {
+            "gatherHours": 8,
+            "reward": {
+              "ore": 40
+            },
+            "cap": 1,
+            "minimum": 0
+          },
+          "soccer": {
+            "gatherHours": 6,
+            "reward": {
+              "momentum": 50
+            },
+            "cap": 1,
+            "minimum": 0
+          },
+          "hike": {
+            "gatherHours": 8,
+            "reward": {
+              "wood": 45,
+              "discovery": 10
+            },
+            "cap": 1,
+            "minimum": 45
+          },
+          "cardio": {
+            "gatherHours": 4,
+            "reward": {
+              "momentum": 20
+            },
+            "cap": 1,
+            "minimum": 15
+          },
+          "cycle": {
+            "gatherHours": 4,
+            "reward": {
+              "momentum": 12,
+              "wood": 5
+            },
+            "cap": 2,
+            "minimum": 5
+          },
+          "walk": {
+            "gatherHours": 2,
+            "reward": {
+              "wood": 5,
+              "momentum": 1
+            },
+            "cap": 2,
+            "minimum": 5
+          },
+          "pushups": {
+            "gatherHours": 2,
+            "reward": {
+              "ore": 3,
+              "momentum": 2
+            },
+            "cap": 1,
+            "minimum": 1
+          },
+          "meal": {
+            "gatherHours": 4,
+            "reward": {
+              "food": 12
+            },
+            "cap": 3,
+            "minimum": 0
+          },
+          "plants": {
+            "gatherHours": 2,
+            "reward": {
+              "herbs": 4
+            },
+            "cap": 3,
+            "minimum": 0
+          },
+          "snack": {
+            "gatherHours": 2,
+            "reward": {
+              "food": 3
+            },
+            "cap": 1,
+            "minimum": 0
+          }
+        },
+        "passive": {
+          "wood": 3,
+          "stone": 8,
+          "food": 8
+        },
+        "recipes": {
+          "planks": {
+            "name": "Saw timber",
+            "building": "sawmill",
+            "input": {
+              "wood": 20,
+              "momentum": 5
+            },
+            "output": {
+              "planks": 15
+            },
+            "hours": 8
+          },
+          "fittings": {
+            "name": "Forge fittings",
+            "building": "blacksmith",
+            "input": {
+              "ore": 15,
+              "momentum": 5
+            },
+            "output": {
+              "fittings": 10
+            },
+            "hours": 8
+          },
+          "rations": {
+            "name": "Pack travel rations",
+            "building": "kitchen",
+            "input": {
+              "food": 20,
+              "herbs": 4
+            },
+            "output": {
+              "rations": 10
+            },
+            "hours": 4
+          },
+          "stone": {
+            "name": "Dress river stone",
+            "building": "hall",
+            "input": {
+              "wood": 3
+            },
+            "output": {
+              "stone": 6
+            },
+            "hours": 1
+          }
+        },
+        "buildings": {
+          "sawmill": {
+            "hours": 4,
+            "name": "Sawmill",
+            "cost": {
+              "wood": 20,
+              "stone": 10
+            },
+            "goals": {
+              "walk": 1
+            }
+          },
+          "farm": {
+            "hours": 2,
+            "name": "Kitchen garden",
+            "cost": {
+              "wood": 15,
+              "stone": 5
+            },
+            "goals": {
+              "meal": 1
+            }
+          },
+          "blacksmith": {
+            "hours": 8,
+            "name": "Blacksmith",
+            "cost": {
+              "wood": 30,
+              "stone": 20
+            },
+            "goals": {
+              "gym": 1
+            }
+          },
+          "kitchen": {
+            "hours": 8,
+            "name": "Village kitchen",
+            "cost": {
+              "planks": 15,
+              "stone": 15
+            },
+            "goals": {
+              "meal": 4
+            }
+          },
+          "hall2": {
+            "hours": 48,
+            "name": "Gathering hall · level II",
+            "cost": {
+              "planks": 30,
+              "fittings": 20,
+              "rations": 10
+            },
+            "goals": {
+              "hike": 2,
+              "soccer": 2,
+              "meal": 12
+            },
+            "buildings": [
+              "blacksmith",
+              "kitchen"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "at": 1793188800000,
+      "rules": {
+        "version": 2,
+        "offlineHours": 48,
+        "strengthMode": "gym",
+        "strengthCount": 3,
+        "mealDefinition": "A satisfying meal with a protein source, plants, and enough food for you.",
+        "activities": {
+          "gym": {
+            "gatherHours": 8,
+            "reward": {
+              "ore": 40
+            },
+            "cap": 1,
+            "minimum": 0
+          },
+          "soccer": {
+            "gatherHours": 6,
+            "reward": {
+              "momentum": 50
+            },
+            "cap": 1,
+            "minimum": 0
+          },
+          "hike": {
+            "gatherHours": 8,
+            "reward": {
+              "wood": 45,
+              "discovery": 10
+            },
+            "cap": 1,
+            "minimum": 45
+          },
+          "cardio": {
+            "gatherHours": 4,
+            "reward": {
+              "momentum": 20
+            },
+            "cap": 1,
+            "minimum": 15
+          },
+          "cycle": {
+            "gatherHours": 4,
+            "reward": {
+              "momentum": 12,
+              "wood": 5
+            },
+            "cap": 2,
+            "minimum": 5
+          },
+          "walk": {
+            "gatherHours": 2,
+            "reward": {
+              "wood": 7,
+              "momentum": 1
+            },
+            "cap": 2,
+            "minimum": 5
+          },
+          "pushups": {
+            "gatherHours": 2,
+            "reward": {
+              "ore": 3,
+              "momentum": 2
+            },
+            "cap": 1,
+            "minimum": 1
+          },
+          "meal": {
+            "gatherHours": 4,
+            "reward": {
+              "food": 12
+            },
+            "cap": 4,
+            "minimum": 0
+          },
+          "plants": {
+            "gatherHours": 2,
+            "reward": {
+              "herbs": 4
+            },
+            "cap": 3,
+            "minimum": 0
+          },
+          "snack": {
+            "gatherHours": 2,
+            "reward": {
+              "food": 3
+            },
+            "cap": 1,
+            "minimum": 0
+          }
+        },
+        "passive": {
+          "wood": 3,
+          "stone": 8,
+          "food": 8
+        },
+        "recipes": {
+          "planks": {
+            "name": "Saw timber",
+            "building": "sawmill",
+            "input": {
+              "wood": 20,
+              "momentum": 5
+            },
+            "output": {
+              "planks": 15
+            },
+            "hours": 8
+          },
+          "fittings": {
+            "name": "Forge fittings",
+            "building": "blacksmith",
+            "input": {
+              "ore": 15,
+              "momentum": 5
+            },
+            "output": {
+              "fittings": 10
+            },
+            "hours": 8
+          },
+          "rations": {
+            "name": "Pack travel rations",
+            "building": "kitchen",
+            "input": {
+              "food": 20,
+              "herbs": 4
+            },
+            "output": {
+              "rations": 10
+            },
+            "hours": 4
+          },
+          "stone": {
+            "name": "Dress river stone",
+            "building": "hall",
+            "input": {
+              "wood": 3
+            },
+            "output": {
+              "stone": 6
+            },
+            "hours": 1
+          }
+        },
+        "buildings": {
+          "sawmill": {
+            "hours": 4,
+            "name": "Sawmill",
+            "cost": {
+              "wood": 20,
+              "stone": 10
+            },
+            "goals": {
+              "walk": 1
+            }
+          },
+          "farm": {
+            "hours": 2,
+            "name": "Kitchen garden",
+            "cost": {
+              "wood": 15,
+              "stone": 5
+            },
+            "goals": {
+              "meal": 1
+            }
+          },
+          "blacksmith": {
+            "hours": 8,
+            "name": "Blacksmith",
+            "cost": {
+              "wood": 30,
+              "stone": 20
+            },
+            "goals": {
+              "gym": 1
+            }
+          },
+          "kitchen": {
+            "hours": 8,
+            "name": "Village kitchen",
+            "cost": {
+              "planks": 15,
+              "stone": 15
+            },
+            "goals": {
+              "meal": 4
+            }
+          },
+          "hall2": {
+            "hours": 48,
+            "name": "Gathering hall · level II",
+            "cost": {
+              "planks": 30,
+              "fittings": 20,
+              "rations": 10
+            },
+            "goals": {
+              "hike": 2,
+              "soccer": 2,
+              "meal": 12
+            },
+            "buildings": [
+              "blacksmith",
+              "kitchen"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "rules": {
+    "version": 2,
+    "offlineHours": 48,
+    "strengthMode": "gym",
+    "strengthCount": 3,
+    "mealDefinition": "A satisfying meal with a protein source, plants, and enough food for you.",
+    "activities": {
+      "gym": {
+        "gatherHours": 8,
+        "reward": {
+          "ore": 40
+        },
+        "cap": 1,
+        "minimum": 0
+      },
+      "soccer": {
+        "gatherHours": 6,
+        "reward": {
+          "momentum": 50
+        },
+        "cap": 1,
+        "minimum": 0
+      },
+      "hike": {
+        "gatherHours": 8,
+        "reward": {
+          "wood": 45,
+          "discovery": 10
+        },
+        "cap": 1,
+        "minimum": 45
+      },
+      "cardio": {
+        "gatherHours": 4,
+        "reward": {
+          "momentum": 20
+        },
+        "cap": 1,
+        "minimum": 15
+      },
+      "cycle": {
+        "gatherHours": 4,
+        "reward": {
+          "momentum": 12,
+          "wood": 5
+        },
+        "cap": 2,
+        "minimum": 5
+      },
+      "walk": {
+        "gatherHours": 2,
+        "reward": {
+          "wood": 7,
+          "momentum": 1
+        },
+        "cap": 2,
+        "minimum": 5
+      },
+      "pushups": {
+        "gatherHours": 2,
+        "reward": {
+          "ore": 3,
+          "momentum": 2
+        },
+        "cap": 1,
+        "minimum": 1
+      },
+      "meal": {
+        "gatherHours": 4,
+        "reward": {
+          "food": 12
+        },
+        "cap": 4,
+        "minimum": 0
+      },
+      "plants": {
+        "gatherHours": 2,
+        "reward": {
+          "herbs": 4
+        },
+        "cap": 3,
+        "minimum": 0
+      },
+      "snack": {
+        "gatherHours": 2,
+        "reward": {
+          "food": 3
+        },
+        "cap": 1,
+        "minimum": 0
+      }
+    },
+    "passive": {
+      "wood": 3,
+      "stone": 8,
+      "food": 8
+    },
+    "recipes": {
+      "planks": {
+        "name": "Saw timber",
+        "building": "sawmill",
+        "input": {
+          "wood": 20,
+          "momentum": 5
+        },
+        "output": {
+          "planks": 15
+        },
+        "hours": 8
+      },
+      "fittings": {
+        "name": "Forge fittings",
+        "building": "blacksmith",
+        "input": {
+          "ore": 15,
+          "momentum": 5
+        },
+        "output": {
+          "fittings": 10
+        },
+        "hours": 8
+      },
+      "rations": {
+        "name": "Pack travel rations",
+        "building": "kitchen",
+        "input": {
+          "food": 20,
+          "herbs": 4
+        },
+        "output": {
+          "rations": 10
+        },
+        "hours": 4
+      },
+      "stone": {
+        "name": "Dress river stone",
+        "building": "hall",
+        "input": {
+          "wood": 3
+        },
+        "output": {
+          "stone": 6
+        },
+        "hours": 1
+      }
+    },
+    "buildings": {
+      "sawmill": {
+        "hours": 4,
+        "name": "Sawmill",
+        "cost": {
+          "wood": 20,
+          "stone": 10
+        },
+        "goals": {
+          "walk": 1
+        }
+      },
+      "farm": {
+        "hours": 2,
+        "name": "Kitchen garden",
+        "cost": {
+          "wood": 15,
+          "stone": 5
+        },
+        "goals": {
+          "meal": 1
+        }
+      },
+      "blacksmith": {
+        "hours": 8,
+        "name": "Blacksmith",
+        "cost": {
+          "wood": 30,
+          "stone": 20
+        },
+        "goals": {
+          "gym": 1
+        }
+      },
+      "kitchen": {
+        "hours": 8,
+        "name": "Village kitchen",
+        "cost": {
+          "planks": 15,
+          "stone": 15
+        },
+        "goals": {
+          "meal": 4
+        }
+      },
+      "hall2": {
+        "hours": 48,
+        "name": "Gathering hall · level II",
+        "cost": {
+          "planks": 30,
+          "fittings": 20,
+          "rations": 10
+        },
+        "goals": {
+          "hike": 2,
+          "soccer": 2,
+          "meal": 12
+        },
+        "buildings": [
+          "blacksmith",
+          "kitchen"
+        ]
+      }
+    }
+  },
+  "inventory": {
+    "wood": 26.125,
+    "stone": 6.3333333333333295,
+    "ore": 70,
+    "momentum": 41,
+    "food": 53.33333333333334,
+    "herbs": 8,
+    "planks": 5,
+    "fittings": 0,
+    "rations": 0,
+    "gold": 12,
+    "discovery": 20
+  },
+  "logs": [
+    {
+      "id": "fixture-0",
+      "type": "walk",
+      "at": 1793188800000,
+      "amount": 10,
+      "notes": "Existing player history",
+      "day": "2026-10-28",
+      "week": 2965,
+      "entered": 1793188800000,
+      "reward": {
+        "wood": 7,
+        "momentum": 1
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-1",
+      "type": "meal",
+      "at": 1793188800000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-28",
+      "week": 2965,
+      "entered": 1793188800000,
+      "reward": {
+        "food": 12
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-2",
+      "type": "gym",
+      "at": 1793188800000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-28",
+      "week": 2965,
+      "entered": 1793188800000,
+      "reward": {
+        "ore": 40
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-3",
+      "type": "plants",
+      "at": 1793188800000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-28",
+      "week": 2965,
+      "entered": 1793188800000,
+      "reward": {
+        "herbs": 4
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-4",
+      "type": "hike",
+      "at": 1793188800000,
+      "amount": 60,
+      "notes": "Existing player history",
+      "day": "2026-10-28",
+      "week": 2965,
+      "entered": 1793188800000,
+      "reward": {
+        "wood": 45,
+        "discovery": 10
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-5",
+      "type": "soccer",
+      "at": 1793188800000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-28",
+      "week": 2965,
+      "entered": 1793188800000,
+      "reward": {
+        "momentum": 50
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-6",
+      "type": "gym",
+      "at": 1793275200000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-29",
+      "week": 2965,
+      "entered": 1793275200000,
+      "reward": {
+        "ore": 40
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-7",
+      "type": "meal",
+      "at": 1793275200000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-29",
+      "week": 2965,
+      "entered": 1793275200000,
+      "reward": {
+        "food": 12
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-8",
+      "type": "meal",
+      "at": 1793275200000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-29",
+      "week": 2965,
+      "entered": 1793275200000,
+      "reward": {
+        "food": 12
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-9",
+      "type": "plants",
+      "at": 1793275200000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-29",
+      "week": 2965,
+      "entered": 1793275200000,
+      "reward": {
+        "herbs": 4
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-10",
+      "type": "hike",
+      "at": 1793275200000,
+      "amount": 60,
+      "notes": "Existing player history",
+      "day": "2026-10-29",
+      "week": 2965,
+      "entered": 1793275200000,
+      "reward": {
+        "wood": 45,
+        "discovery": 10
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-11",
+      "type": "gym",
+      "at": 1793361600000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-30",
+      "week": 2965,
+      "entered": 1793361600000,
+      "reward": {
+        "ore": 40
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-12",
+      "type": "meal",
+      "at": 1793361600000,
+      "amount": 0,
+      "notes": "Existing player history",
+      "day": "2026-10-30",
+      "week": 2965,
+      "entered": 1793361600000,
+      "reward": {
+        "food": 12
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    },
+    {
+      "id": "fixture-13",
+      "type": "walk",
+      "at": 1793361600000,
+      "amount": 10,
+      "notes": "Existing player history",
+      "day": "2026-10-30",
+      "week": 2965,
+      "entered": 1793361600000,
+      "reward": {
+        "wood": 7,
+        "momentum": 1
+      },
+      "qualified": true,
+      "rule": 2,
+      "delivery": "gather"
+    }
+  ],
+  "ledger": [
+    {
+      "id": "0",
+      "at": 1793188800000,
+      "source": "Welcome supplies",
+      "delta": {
+        "wood": 45,
+        "stone": 30,
+        "momentum": 10
+      },
+      "rule": 1
+    },
+    {
+      "id": "1",
+      "at": 1793188800000,
+      "source": "Build sawmill",
+      "delta": {
+        "wood": -20,
+        "stone": -10
+      },
+      "rule": 2
+    },
+    {
+      "id": "2",
+      "at": 1793188800000,
+      "source": "Build farm",
+      "delta": {
+        "wood": -15,
+        "stone": -5
+      },
+      "rule": 2
+    },
+    {
+      "id": "3",
+      "at": 1793203200000,
+      "source": "Village production",
+      "delta": {
+        "wood": 0.5,
+        "stone": 1.3333333333333333
+      },
+      "rule": 2
+    },
+    {
+      "id": "4",
+      "at": 1793210400000,
+      "source": "Village production",
+      "delta": {
+        "wood": 0.25,
+        "stone": 0.6666666666666666
+      },
+      "rule": 2
+    },
+    {
+      "id": "5",
+      "at": 1793246400000,
+      "source": "Village production",
+      "delta": {
+        "wood": 1.25,
+        "stone": 3.3333333333333335,
+        "food": 3.3333333333333335
+      },
+      "rule": 2
+    },
+    {
+      "id": "6",
+      "at": 1793246400000,
+      "source": "Gather fixture-0 wood",
+      "delta": {
+        "wood": 7
+      },
+      "rule": 2
+    },
+    {
+      "id": "7",
+      "at": 1793246400000,
+      "source": "Gather fixture-0 momentum",
+      "delta": {
+        "momentum": 1
+      },
+      "rule": 2
+    },
+    {
+      "id": "8",
+      "at": 1793246400000,
+      "source": "Gather fixture-1 food",
+      "delta": {
+        "food": 12
+      },
+      "rule": 2
+    },
+    {
+      "id": "9",
+      "at": 1793246400000,
+      "source": "Gather fixture-2 ore",
+      "delta": {
+        "ore": 40
+      },
+      "rule": 2
+    },
+    {
+      "id": "10",
+      "at": 1793246400000,
+      "source": "Gather fixture-3 herbs",
+      "delta": {
+        "herbs": 4
+      },
+      "rule": 2
+    },
+    {
+      "id": "11",
+      "at": 1793246400000,
+      "source": "Gather fixture-4 wood",
+      "delta": {
+        "wood": 45
+      },
+      "rule": 2
+    },
+    {
+      "id": "12",
+      "at": 1793246400000,
+      "source": "Gather fixture-4 discovery",
+      "delta": {
+        "discovery": 10
+      },
+      "rule": 2
+    },
+    {
+      "id": "13",
+      "at": 1793246400000,
+      "source": "Gather fixture-5 momentum",
+      "delta": {
+        "momentum": 50
+      },
+      "rule": 2
+    },
+    {
+      "id": "14",
+      "at": 1793246400000,
+      "source": "Queue planks",
+      "delta": {
+        "wood": -20,
+        "momentum": -5
+      },
+      "rule": 2
+    },
+    {
+      "id": "15",
+      "at": 1793246400000,
+      "source": "Build blacksmith",
+      "delta": {
+        "wood": -30,
+        "stone": -20
+      },
+      "rule": 2
+    },
+    {
+      "id": "16",
+      "at": 1793275200000,
+      "source": "Village production",
+      "delta": {
+        "wood": 1,
+        "stone": 2.6666666666666665,
+        "food": 2.6666666666666665
+      },
+      "rule": 2
+    },
+    {
+      "id": "17",
+      "at": 1793275200000,
+      "source": "Craft planks",
+      "delta": {
+        "planks": 15
+      },
+      "rule": 2
+    },
+    {
+      "id": "18",
+      "at": 1793275200000,
+      "source": "Commission bench",
+      "delta": {
+        "planks": -10
+      },
+      "rule": 2
+    },
+    {
+      "id": "19",
+      "at": 1793275200000,
+      "source": "Commission reward bench",
+      "delta": {
+        "stone": 10,
+        "gold": 12
+      },
+      "rule": 2
+    },
+    {
+      "id": "20",
+      "at": 1793304000000,
+      "source": "Village production",
+      "delta": {
+        "wood": 1,
+        "stone": 2.6666666666666665,
+        "food": 2.6666666666666665
+      },
+      "rule": 2
+    },
+    {
+      "id": "21",
+      "at": 1793304000000,
+      "source": "Gather fixture-6 ore",
+      "delta": {
+        "ore": 40
+      },
+      "rule": 2
+    },
+    {
+      "id": "22",
+      "at": 1793304000000,
+      "source": "Gather fixture-7 food",
+      "delta": {
+        "food": 12
+      },
+      "rule": 2
+    },
+    {
+      "id": "23",
+      "at": 1793304000000,
+      "source": "Gather fixture-8 food",
+      "delta": {
+        "food": 12
+      },
+      "rule": 2
+    },
+    {
+      "id": "24",
+      "at": 1793304000000,
+      "source": "Gather fixture-9 herbs",
+      "delta": {
+        "herbs": 4
+      },
+      "rule": 2
+    },
+    {
+      "id": "25",
+      "at": 1793304000000,
+      "source": "Gather fixture-10 wood",
+      "delta": {
+        "wood": 45
+      },
+      "rule": 2
+    },
+    {
+      "id": "26",
+      "at": 1793304000000,
+      "source": "Gather fixture-10 discovery",
+      "delta": {
+        "discovery": 10
+      },
+      "rule": 2
+    },
+    {
+      "id": "27",
+      "at": 1793304000000,
+      "source": "Queue planks",
+      "delta": {
+        "wood": -20,
+        "momentum": -5
+      },
+      "rule": 2
+    },
+    {
+      "id": "28",
+      "at": 1793361600000,
+      "source": "Village production",
+      "delta": {
+        "wood": 2,
+        "stone": 5.333333333333333,
+        "food": 5.333333333333333
+      },
+      "rule": 2
+    },
+    {
+      "id": "29",
+      "at": 1793361600000,
+      "source": "Craft planks",
+      "delta": {
+        "planks": 15
+      },
+      "rule": 2
+    },
+    {
+      "id": "30",
+      "at": 1793361600000,
+      "source": "Build kitchen",
+      "delta": {
+        "stone": -15,
+        "planks": -15
+      },
+      "rule": 2
+    },
+    {
+      "id": "31",
+      "at": 1793361600000,
+      "source": "Queue fittings",
+      "delta": {
+        "ore": -15,
+        "momentum": -5
+      },
+      "rule": 2
+    },
+    {
+      "id": "32",
+      "at": 1793361600000,
+      "source": "Queue planks",
+      "delta": {
+        "wood": -20,
+        "momentum": -5
+      },
+      "rule": 2
+    },
+    {
+      "id": "33",
+      "at": 1793365200000,
+      "source": "Village production",
+      "delta": {
+        "wood": 0.125,
+        "stone": 0.3333333333333333,
+        "food": 0.3333333333333333
+      },
+      "rule": 2
+    },
+    {
+      "id": "34",
+      "at": 1793365200000,
+      "source": "Gather fixture-11 ore",
+      "delta": {
+        "ore": 5
+      },
+      "rule": 2
+    },
+    {
+      "id": "35",
+      "at": 1793365200000,
+      "source": "Gather fixture-12 food",
+      "delta": {
+        "food": 3
+      },
+      "rule": 2
+    },
+    {
+      "id": "36",
+      "at": 1793365200000,
+      "source": "Gather fixture-13 wood",
+      "delta": {
+        "wood": 3
+      },
+      "rule": 2
+    }
+  ],
+  "jobs": [
+    {
+      "id": "planks-one",
+      "recipe": "planks",
+      "building": "sawmill",
+      "end": 1793275200000,
+      "output": {
+        "planks": 15
+      },
+      "done": true
+    },
+    {
+      "id": "planks-two",
+      "recipe": "planks",
+      "building": "sawmill",
+      "end": 1793332800000,
+      "output": {
+        "planks": 15
+      },
+      "done": true
+    },
+    {
+      "id": "fittings-one",
+      "recipe": "fittings",
+      "building": "blacksmith",
+      "end": 1793390400000,
+      "output": {
+        "fittings": 10
+      },
+      "done": false
+    },
+    {
+      "id": "planks-three",
+      "recipe": "planks",
+      "building": "sawmill",
+      "end": 1793390400000,
+      "output": {
+        "planks": 15
+      },
+      "done": false
+    }
+  ],
+  "buildings": [
+    "hall",
+    "sawmill",
+    "farm",
+    "blacksmith"
+  ],
+  "credentials": {
+    "walk:1": 1793188800000,
+    "meal:1": 1793188800000,
+    "gym:1": 1793188800000,
+    "plants:1": 1793188800000,
+    "hike:1": 1793188800000,
+    "soccer:1": 1793188800000,
+    "gym:2": 1793275200000,
+    "meal:2": 1793275200000,
+    "meal:3": 1793275200000,
+    "plants:2": 1793275200000,
+    "hike:2": 1793275200000,
+    "gym:3": 1793361600000,
+    "meal:4": 1793361600000,
+    "walk:2": 1793361600000
+  },
+  "discoveries": [],
+  "orders": [
+    "bench"
+  ],
+  "audit": [
+    "Rules v2 applied prospectively; prior payouts and credentials retained.",
+    "Completed construction: sawmill",
+    "Completed construction: farm",
+    "Completed construction: blacksmith"
+  ],
+  "debt": {}
+}

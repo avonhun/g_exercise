@@ -37,3 +37,12 @@ Keep this revision in preview until the user approves deployment.
 ## Working village layer
 
 Original animated pixel figures are authored in `Villagers.tsx`, with separate tool, body and particle layers. Foresters swing axes, miners use picks, gardeners tend plants, couriers carry supplies and builders hammer. Keep them at roughly a doorway's height (4% map width on desktop, 5% on phone); they must not dwarf buildings. Scaffolds occupy the existing isometric footprint and completed sprites retain their original scale. Earned crews are tied to active finite jobs, while background commons have slower, separately labelled workers. Respect reduced-motion preferences; the work engine, timers and save accounting never depend on animation frames.
+
+
+## Village edition · 0.5 (current)
+
+This section supersedes earlier character, interface palette, and footprint guidance. Keep Barlow 400/600 and the shared 18px heading / 14px body / 12px metadata scale. Use dark timber `#302b23`, warm parchment `#eee4ce`, ink `#342d24`, forest `#35533f`, and aged brass `#c9ae76`. Avoid green cards, floating panels, rounded UI corners, decorative slogans, and competing fonts. Region variables change materials and accents while control placement and type remain consistent. Do not show undiscovered palettes in normal navigation.
+
+Primary buildings are 19% map width (20% phone); supporting shops/cottages are 8–12%. `SettlementLife.tsx` places neighborhood assets and paths from completed-building state. Source masters `neighborhoods.png` (3×2) and `townsfolk.png` (4×4) are original generated art, matching the existing painted miniature direction. The character master exports at 1024×1024 and each task uses a four-pose row. Do not apply nearest-neighbor or crisp-edge rendering to people. All exports use the existing deterministic Sharp pipeline and offline precache.
+
+Resident journeys are independent of game simulation. Chopping, mining and building use the matching animation rows; basket carriers serve garden and delivery routes. Animation does not grant resources, speed up work, or require an open screen. Reduced motion presents static figures. No sound or runtime art dependencies were added.

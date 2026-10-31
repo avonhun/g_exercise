@@ -122,6 +122,7 @@ describe("construction and work persistence", () => {
   it("reserves materials but offers no workshop until construction finishes", () => {
     const s = noPassive();
     gym(s);
+    log(s, { id: "cardio-build", type: "cardio", at: t, amount: 15 }, t);
     build(s, "blacksmith", t);
     expect(s.inventory.wood).toBe(15);
     expect(s.buildings).not.toContain("blacksmith");
@@ -150,6 +151,7 @@ describe("construction and work persistence", () => {
     const s = noPassive();
     s.rules.offlineHours = 1;
     gym(s);
+    log(s, { id: "cardio-build", type: "cardio", at: t, amount: 15 }, t);
     build(s, "blacksmith", t);
     const r = structuredClone(s.rules);
     r.buildings.blacksmith.hours = 0.1;
@@ -170,6 +172,7 @@ describe("construction and work persistence", () => {
   it("roundtrips active jobs and reconciles delivered resources to the ledger", () => {
     const s = noPassive();
     gym(s);
+    log(s, { id: "cardio-build", type: "cardio", at: t, amount: 15 }, t);
     build(s, "blacksmith", t);
     tick(s, t + HOUR);
     const loaded = migrate(JSON.parse(JSON.stringify(s)));

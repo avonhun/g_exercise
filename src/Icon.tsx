@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
 const marks: Record<string, ReactNode> = {
+  guide: (
+    <>
+      <path d="M2 3q5-2 10 1 5-3 10-1v17q-5-2-10 1-5-3-10-1Z" />
+      <path d="M12 5v14M5 7h4M5 11h4M15 7h4M15 11h4" className="cut" />
+    </>
+  ),
   arrow: <path d="M3 18 17 4H6V1h17v17h-3V7L6 21Z" />,
   down: <path d="M10 1h4v14l5-5 3 3-10 10L2 13l3-3 5 5Z" />,
   village: (

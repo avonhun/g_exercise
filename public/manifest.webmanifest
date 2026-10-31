@@ -4,8 +4,8 @@
   "short_name": "Living World",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#eeede8",
-  "theme_color": "#26343c",
+  "background_color": "#eee4ce",
+  "theme_color": "#302b23",
   "icons": [
     {
       "src": "/icon-192.png",

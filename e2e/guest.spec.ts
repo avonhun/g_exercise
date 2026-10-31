@@ -16,7 +16,7 @@ test("guest-only production starts without a database and never requests account
   );
   await expect(page.getByText("Sign in", { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Record an accomplishment" }).click();
-  await page.getByRole("button", { name: "Let it grow" }).click();
+  await page.getByRole("button", { name: "Record accomplishment" }).click();
   await expect(page.getByRole("status")).toContainText("Work queued");
   await page.reload();
   expect(

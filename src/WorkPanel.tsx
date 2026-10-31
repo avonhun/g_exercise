@@ -54,11 +54,6 @@ export function WorkPanel({ save }: { save: Save }) {
           </div>
         );
       })}
-      <p className="subtle">
-        Crews collect a finite reward. Extra accomplishments extend the queue.
-        Work continues offline for up to {save.rules.offlineHours} hours per
-        absence.
-      </p>
     </section>
   );
 }

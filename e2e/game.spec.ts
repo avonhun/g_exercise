@@ -24,7 +24,7 @@ test("mobile activity, building, crafting, correction, saves and console", async
   await page
     .getByLabel("Minutes (0 for meal or completed-session logs)")
     .fill("10");
-  await page.getByRole("button", { name: "Let it grow" }).click();
+  await page.getByRole("button", { name: "Record accomplishment" }).click();
   await expect(page.getByRole("status")).toContainText("5 wood");
   await page.getByRole("button", { name: "Dismiss message" }).click();
   await page.getByRole("button", { name: "Build sawmill" }).click();
@@ -104,7 +104,7 @@ test("production shell survives a reload without a network connection", async ({
   ).toBeVisible();
   await page.getByRole("button", { name: "Record an accomplishment" }).click();
   await page.getByLabel("What did you do?").selectOption("pushups");
-  await page.getByRole("button", { name: "Let it grow" }).click();
+  await page.getByRole("button", { name: "Record accomplishment" }).click();
   await expect(page.getByRole("status")).toContainText("3 ore");
 });
 test("desktop layout and save import validation", async ({ page }) => {
@@ -183,10 +183,10 @@ test("stale tab cannot overwrite a newer world", async ({ page, context }) => {
   await second
     .getByRole("button", { name: "Record an accomplishment" })
     .click();
-  await second.getByRole("button", { name: "Let it grow" }).click();
+  await second.getByRole("button", { name: "Record accomplishment" }).click();
   await expect(second.getByRole("status")).toContainText("5 wood");
   await page.getByRole("button", { name: "Record an accomplishment" }).click();
-  await page.getByRole("button", { name: "Let it grow" }).click();
+  await page.getByRole("button", { name: "Record accomplishment" }).click();
   await expect(page.getByRole("status")).toContainText("another tab");
   const current = await second.evaluate(() =>
     JSON.parse(localStorage.getItem("living-world.save")!),
@@ -311,9 +311,9 @@ test("visible crews gather gradually, build in sequence, and rest when work fini
   await expect(
     page.getByRole("img", { name: "Queued construction: Kitchen garden" }),
   ).toBeVisible();
-  const arm = page.locator(".gather-wood .worker-arm");
+  const arm = page.locator(".gather-wood .villager");
   expect(await arm.evaluate((el) => getComputedStyle(el).animationName)).toBe(
-    "work-swing",
+    "villager-poses",
   );
   expect(
     await arm.evaluate((el) =>
@@ -441,7 +441,7 @@ test("unavailable build buttons explain requirements instead of swallowing taps"
   ).toHaveLength(0);
   await page.getByRole("button", { name: "Dismiss message" }).click();
   await page.getByRole("button", { name: "Record an accomplishment" }).click();
-  await page.getByRole("button", { name: "Let it grow" }).click();
+  await page.getByRole("button", { name: "Record accomplishment" }).click();
   await page.getByRole("button", { name: "Dismiss message" }).click();
   await button.click();
   await expect(page.getByRole("status")).toContainText("construction started");
@@ -495,4 +495,187 @@ test("material shortages are explained in both construction views", async ({
       () => JSON.parse(localStorage.getItem("living-world.save")!).construction,
     ),
   ).toHaveLength(0);
+});
+
+test("v0.4 export imports without losing progress and gets its existing town details", async ({
+  page,
+}) => {
+  const { default: old } = await import("./fixtures/v04-world.json", {
+    with: { type: "json" },
+  });
+  await page.clock.install({ time: new Date(old.clock) });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open settings" }).click();
+  await page.locator("input[type=file]").setInputFiles({
+    name: "my-world.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(old)),
+  });
+  await expect(page.getByRole("status")).toContainText("World restored");
+  const save = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("living-world.save")!),
+  );
+  for (const field of [
+    "inventory",
+    "logs",
+    "credentials",
+    "ledger",
+    "construction",
+    "gathering",
+    "jobs",
+    "buildings",
+    "orders",
+    "discoveries",
+  ])
+    expect(save[field], field).toEqual((old as Record<string, unknown>)[field]);
+  expect(save.rules.activities.walk.reward.wood).toBe(7);
+  await page.getByRole("button", { name: "Village", exact: true }).click();
+  await expect(page.getByAltText("Carpenter’s shop")).toBeVisible();
+  await expect(page.getByAltText("Tool merchant’s stall")).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Building Village kitchen", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("img", { name: "Mara’s bench" })).toBeVisible();
+  await expect(page.getByAltText("Village bakery")).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByAltText("Carpenter’s shop")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("living-world.save")!).logs,
+    ),
+  ).toEqual(old.logs);
+});
+
+test("guide answers resource questions, uses saved rules and hides future discoveries", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Guide", exact: true }).click();
+  await expect(page.getByText("Stillwater Brook")).toHaveCount(0);
+  await page
+    .locator(".guide-entry")
+    .filter({ has: page.locator("summary", { hasText: "Wood" }) })
+    .locator("summary")
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "How to get wood" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("3 per day · automatic background production", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Record dog walk / short walk" })
+    .click();
+  await expect(page.getByLabel("What did you do?")).toHaveValue("walk");
+  await page.getByRole("button", { name: "Close logger" }).click();
+  await page.getByRole("button", { name: "Buildings", exact: true }).click();
+  await expect(page.getByText("Gathering hall · level II")).toHaveCount(0);
+  await page.getByRole("button", { name: "How to play", exact: true }).click();
+  await expect(
+    page.getByText("Inputs are reserved when queued.", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("72 hours per absence", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Workshops", exact: true }).click();
+  await expect(
+    page.getByText("Inputs are reserved when queued.", { exact: false }),
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: "Journal", exact: true }).click();
+  await expect(page.getByText("Lift weights", { exact: true })).toBeVisible();
+  await expect(page.getByText("Gym session", { exact: true })).toHaveCount(0);
+});
+
+test("requests explain their tradeoffs and completed requests furnish the village", async ({
+  page,
+}) => {
+  const { fresh } = await import("../src/engine");
+  const save = fresh(Date.now());
+  save.inventory.food = 20;
+  save.inventory.herbs = 4;
+  await page.addInitScript((s) => {
+    if (!localStorage.getItem("living-world.save"))
+      localStorage.setItem("living-world.save", JSON.stringify(s));
+  }, save);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Requests", exact: true }).click();
+  const supper = page
+    .locator("article")
+    .filter({ has: page.getByRole("heading", { name: "A shared supper" }) });
+  await expect(supper).toContainText("Adds a shared table");
+  await expect(supper).toContainText("Momentum fuels workshop batches");
+  await expect(supper).toContainText("Receive");
+  await supper.getByRole("button", { name: "Deliver supplies" }).click();
+  await expect(page.getByRole("status")).toContainText("10 gold");
+  const result = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("living-world.save")!),
+  );
+  expect(result.inventory.food).toBe(0);
+  expect(result.inventory.herbs).toBe(0);
+  expect(result.inventory.gold).toBe(10);
+  await page.getByRole("button", { name: "Village", exact: true }).click();
+  await expect(
+    page.getByRole("img", { name: "Elin’s shared supper table" }),
+  ).toBeVisible();
+});
+
+test("discovered territory changes palette without changing the world, and reduced motion stops residents", async ({
+  page,
+}) => {
+  const { fresh } = await import("../src/engine");
+  const save = fresh(Date.now());
+  save.discoveries = ["brook"];
+  save.buildings.push("sawmill");
+  await page.addInitScript((s) => {
+    if (!localStorage.getItem("living-world.save"))
+      localStorage.setItem("living-world.save", JSON.stringify(s));
+  }, save);
+  await page.goto("/");
+  const original = await page.evaluate(() =>
+    localStorage.getItem("living-world.save"),
+  );
+  const greenhaven = await page
+    .locator(".topbar")
+    .evaluate((el) => getComputedStyle(el).backgroundColor);
+  const resident = page.locator(".town-resident").first();
+  expect(
+    await resident.evaluate((el) =>
+      el.getAnimations().some((a) => a.playState === "running"),
+    ),
+  ).toBe(true);
+  // The first route begins with a short pause; its second route starts walking.
+  const walking = page.locator(".town-resident").nth(1);
+  const a = await walking.boundingBox();
+  await page.waitForTimeout(500);
+  const b = await walking.boundingBox();
+  expect(Math.abs(a!.x - b!.x) + Math.abs(a!.y - b!.y)).toBeGreaterThan(0.1);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(
+    await resident.evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("none");
+  expect(
+    await page
+      .locator(".villager")
+      .first()
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("none");
+  await page.getByLabel("Territory", { exact: true }).selectOption("brook");
+  await expect(
+    page.getByRole("heading", { name: "Stillwater Brook", exact: true }),
+  ).toHaveCount(2);
+  expect(
+    await page
+      .locator(".topbar")
+      .evaluate((el) => getComputedStyle(el).backgroundColor),
+  ).not.toBe(greenhaven);
+  await expect(
+    page.getByText("No settlement here yet.", { exact: false }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => localStorage.getItem("living-world.save")),
+  ).toBe(original);
+  await page.getByRole("button", { name: "Return to Greenhaven" }).click();
+  await expect(page.getByAltText("Carpenter’s shop")).toBeVisible();
 });

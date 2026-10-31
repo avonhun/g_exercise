@@ -16,7 +16,7 @@ export const resources = [
 export type Resource = (typeof resources)[number];
 export type Bag = Partial<Record<Resource, number>>;
 export const activityNames = {
-  gym: "Gym session",
+  gym: "Lift weights",
   soccer: "Soccer",
   hike: "Hike",
   cardio: "Treadmill / cardio",
@@ -146,7 +146,7 @@ export const seed: Rules = {
       hours: 8,
       name: "Blacksmith",
       cost: { wood: 30, stone: 20 },
-      goals: { gym: 1 },
+      goals: { cardio: 1 },
     },
     kitchen: {
       hours: 8,
@@ -187,6 +187,7 @@ export interface Transaction {
 }
 export interface Save {
   schema: 3;
+  contentVersion?: number;
   workClock: number;
   gathering: GatherJob[];
   construction: ConstructionJob[];
@@ -216,6 +217,7 @@ export interface Save {
 export function fresh(now: number): Save {
   const s: Save = {
     schema: 3,
+    contentVersion: 2,
     workClock: now,
     gathering: [],
     construction: [],
@@ -546,21 +548,10 @@ export function queue(s: Save, key: string, id: string, now: number) {
 export function requirements(s: Save, key: string) {
   const g = s.rules.buildings[key];
   if (!g) return ["Unknown building"];
+  if (s.credentials["building:" + key]) return [];
   const missing = Object.entries(g.goals)
-    .filter(([a, n]) => !goal(s, a as Activity, n!))
+    .filter(([a, n]) => a !== "gym" && !goal(s, a as Activity, n!))
     .map(([a, n]) => `${n} ${activityNames[a as Activity]}`);
-  if (
-    key === "hall2" &&
-    !(s.rules.strengthMode === "gym" && s.credentials["gym:weeks3"]) &&
-    !goal(
-      s,
-      s.rules.strengthMode === "gym" ? "gym" : "pushups",
-      s.rules.strengthCount,
-    )
-  )
-    missing.push(
-      `${s.rules.strengthCount} ${s.rules.strengthMode === "gym" ? "gym sessions (or 3 consecutive gym weeks)" : "home strength days (selected alternative)"}`,
-    );
   for (const b of g.buildings || [])
     if (!s.buildings.includes(b)) missing.push(s.rules.buildings[b]?.name || b);
   return missing;
@@ -604,14 +595,18 @@ export const orders = [
   {
     id: "bench",
     name: "A place to sit",
-    text: "Mara needs timber for a bench beside the village well.",
+    text: "Timber for a bench beside the village well.",
+    purpose:
+      "Adds a bench to the village square. Stone helps with construction; gold buys ore from the merchant.",
     cost: { planks: 10 } as Bag,
     reward: { gold: 12, stone: 10 } as Bag,
   },
   {
     id: "pantry",
     name: "A shared supper",
-    text: "Help Elin put something warm on every table.",
+    text: "Food and herbs for Elin’s village supper.",
+    purpose:
+      "Adds a shared table beside the kitchen. Momentum fuels workshop batches; gold buys ore from the merchant.",
     cost: { food: 20, herbs: 4 } as Bag,
     reward: { gold: 10, momentum: 5 } as Bag,
   },
@@ -781,7 +776,46 @@ export function applyRules(s: Save, r: Rules) {
 }
 export function migrate(raw: unknown): Save {
   try {
-    return inspectSave(raw);
+    const save = inspectSave(raw);
+    if ((save.contentVersion ?? 1) < 2) {
+      // Stable activity IDs keep historic lifting logs, credentials and queued
+      // rewards intact. Only future building requirements change.
+      for (const [id, building] of Object.entries(save.rules.buildings)) {
+        const hadLiftingGate = !!building.goals.gym;
+        const legacyHomeGate =
+          id === "blacksmith" &&
+          save.rules.strengthMode === "home" &&
+          building.goals.pushups === 7;
+        if (
+          !save.buildings.includes(id) &&
+          (hadLiftingGate || legacyHomeGate) &&
+          Object.entries(building.goals).every(([activity, total]) =>
+            goal(save, activity as Activity, total!),
+          ) &&
+          (building.buildings || []).every((dependency) =>
+            save.buildings.includes(dependency),
+          )
+        ) {
+          // Preserve a building requirement that this player already earned,
+          // without fabricating cardio logs or changing their activity history.
+          save.credentials["building:" + id] ??= save.clock;
+        }
+        delete building.goals.gym;
+        if (legacyHomeGate) delete building.goals.pushups;
+        if (id === "blacksmith" && (hadLiftingGate || legacyHomeGate))
+          building.goals.cardio = Math.max(building.goals.cardio || 0, 1);
+      }
+      save.contentVersion = 2;
+      save.rules.version += 1;
+      save.ruleHistory!.push({
+        at: save.clock,
+        rules: structuredClone(save.rules),
+      });
+      save.audit.push(
+        "Village update: lifting is optional; blacksmith uses cardio. Existing progress and work retained.",
+      );
+    }
+    return save;
   } catch {
     throw Error("Unsupported or damaged save");
   }

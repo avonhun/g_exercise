@@ -36,7 +36,10 @@ import {
   migrationBackup,
   KEY,
 } from "./store";
-import { World, Portrait } from "./World";
+import { World } from "./World";
+import { Guide } from "./Guide";
+import { knownBuildings } from "./guideContent";
+import landscape from "./assets/greenhaven.webp";
 import { Icon } from "./Icon";
 import { ResourceName, ResourceAmounts } from "./Resources";
 import { WorkPanel } from "./WorkPanel";
@@ -58,6 +61,11 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
   const [initial] = useState(load);
   const [save, setSave] = useState(initial.save);
   const [tab, setTab] = useState("village");
+  const [territory, setTerritory] = useState("greenhaven");
+  const activeTerritory =
+    territory === "brook" && save.discoveries.includes("brook")
+      ? "brook"
+      : "greenhaven";
   const [message, setMessage] = useState("");
   const [storageError, setStorageError] = useState(initial.error || "");
   const [saved, setSaved] = useState("");
@@ -74,6 +82,14 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
   const [scenario, setScenario] = useState("rest");
   const [selected, setSelected] = useState("");
   const [resetPhrase, setResetPhrase] = useState("");
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute(
+        "content",
+        activeTerritory === "brook" ? "#283c40" : "#302b23",
+      );
+  }, [activeTerritory]);
   useEffect(() => {
     if (!logger) return;
     const previous = document.activeElement as HTMLElement | null;
@@ -107,7 +123,17 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
       previous?.focus();
     };
   }, [logger]);
-  function openLogger() {
+  function openLogger(activity?: Activity) {
+    if (activity) {
+      setType(activity);
+      setAmount(
+        String(
+          activity === "pushups"
+            ? 5
+            : save.rules.activities[activity].minimum || 0,
+        ),
+      );
+    }
     setAt(localTime());
     setLogger(true);
   }
@@ -228,14 +254,12 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
     });
   }
   const activeJobs = save.jobs.filter((j) => !j.done);
-  const visibleBuildings = Object.entries(save.rules.buildings).filter(
-    ([id]) =>
-      id !== "hall2" ||
-      save.buildings.includes("blacksmith") ||
-      save.buildings.includes("kitchen"),
-  );
+  const visibleBuildings = knownBuildings(save);
+  const constructionOptions = visibleBuildings
+    .filter(([id]) => !save.buildings.includes(id))
+    .slice(0, 3);
   return (
-    <>
+    <div className="game" data-territory={activeTerritory}>
       <header className="topbar">
         <a
           href="#village"
@@ -263,7 +287,25 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
       </header>
       <main>
         <section className="chapter">
-          <h1>Greenhaven Valley</h1>
+          <h1>
+            {activeTerritory === "brook"
+              ? "Stillwater Brook"
+              : "Greenhaven Valley"}
+          </h1>
+          {save.discoveries.includes("brook") && (
+            <select
+              className="territory-switch"
+              aria-label="Territory"
+              value={activeTerritory}
+              onChange={(e) => {
+                setTerritory(e.target.value);
+                setTab("village");
+              }}
+            >
+              <option value="greenhaven">Greenhaven</option>
+              <option value="brook">Stillwater Brook</option>
+            </select>
+          )}
           <div className="weather">
             <Icon name="sun" /> <span>Clear skies</span>
           </div>
@@ -301,9 +343,19 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
               </div>
             ))}
         </div>
-        {tab === "village" && (
+        {tab === "village" && activeTerritory === "greenhaven" && (
           <>
-            <div className="village-layout">
+            <div
+              className={
+                "village-layout" +
+                (!constructionOptions.length &&
+                !save.gathering.some(
+                  (j) => !j.cancelled && j.delivered < j.total,
+                )
+                  ? " settled"
+                  : "")
+              }
+            >
               <section className="map-panel">
                 <World
                   save={save}
@@ -319,104 +371,92 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                       ? "building"
                       : "buildings"}
                   </span>
-                  <button className="primary" onClick={openLogger}>
+                  <button className="primary" onClick={() => openLogger()}>
                     Record an accomplishment
                   </button>
                 </div>
               </section>
               <aside className="village-sidebar">
                 <WorkPanel save={save} />
-                <section className="story-card">
-                  <div className="character">
-                    <Portrait />
-                    <div>
-                      <h2>Mara</h2>
-                      <span>Village keeper</span>
-                    </div>
-                  </div>
-                  <blockquote>
-                    “A village grows much like a good habit. A little care, a
-                    little patience—and one day, you look up to find something
-                    wonderful.”
-                  </blockquote>
-                  <p>
-                    Your walks, shared meals, and hard-earned workouts give this
-                    place its life.
-                  </p>
-                </section>
-                <section className="section-heading">
-                  <h2>Construction</h2>
-                </section>
+                {constructionOptions.length > 0 && (
+                  <section className="section-heading">
+                    <h2>Construction</h2>
+                  </section>
+                )}
                 <div className="objective-grid">
-                  {visibleBuildings
-                    .filter(([id]) => !save.buildings.includes(id))
-                    .slice(0, 3)
-                    .map(([id, b]) => (
-                      <article className="objective" key={id}>
-                        <h3>{b.name}</h3>
-                        <p>
-                          {id === "sawmill"
-                            ? "Turns wood into planks."
-                            : id === "farm"
-                              ? "Produces a small daily food supply."
-                              : id === "blacksmith"
-                                ? "Turns ore into metal fittings."
-                                : "Adds new options to the village."}
-                        </p>
-                        <div
-                          className="requirements"
-                          id={"construction-" + id + "-requirements"}
-                        >
-                          {constructionFeedback(save, id) || "Ready to build"}
-                        </div>
-                        <small>
-                          {b.hours}h to build ·{" "}
-                          <ResourceAmounts amounts={b.cost} />
-                        </small>
-                        {save.construction
-                          .filter((j) => j.building === id && !j.done)
-                          .map((j) => (
-                            <div className="construction-status" key={j.id}>
-                              <progress
-                                aria-label={b.name + " construction progress"}
-                                value={fraction(j, save.workClock)}
-                                max={1}
-                              />
-                              <span>
-                                {j.start > save.workClock
-                                  ? "Queued · starts in " +
-                                    durationLabel(j.start - save.workClock)
-                                  : "Building · " +
-                                    durationLabel(j.end - save.workClock) +
-                                    " remaining"}
-                              </span>
-                            </div>
-                          ))}
-                        <button
-                          aria-label={"Build " + b.name.toLowerCase()}
-                          aria-describedby={
-                            "construction-" + id + "-requirements"
-                          }
-                          onClick={() => requestConstruction(id)}
-                          disabled={save.construction.some(
-                            (j) => j.building === id && !j.done,
-                          )}
-                        >
-                          {save.construction.some(
-                            (j) => j.building === id && !j.done,
-                          )
-                            ? save.construction.some(
-                                (j) =>
-                                  j.building === id &&
-                                  !j.done &&
-                                  j.start <= save.workClock,
-                              )
-                              ? "Building"
-                              : "Queued"
-                            : "Build"}
-                        </button>
-                      </article>
-                    ))}
+                  {constructionOptions.map(([id, b]) => (
+                    <article className="objective" key={id}>
+                      <h3>{b.name}</h3>
+                      <p>
+                        {id === "sawmill"
+                          ? "Turns wood into planks."
+                          : id === "farm"
+                            ? `Produces ${save.rules.passive.food || 0} food per day.`
+                            : id === "blacksmith"
+                              ? "Turns ore into metal fittings."
+                              : id === "kitchen"
+                                ? "Crafts travel rations."
+                                : id === "hall2"
+                                  ? "Unlocks expeditions."
+                                  : "Village infrastructure."}
+                      </p>
+                      <div
+                        className="requirements"
+                        hidden={save.construction.some(
+                          (j) => j.building === id && !j.done,
+                        )}
+                        id={"construction-" + id + "-requirements"}
+                      >
+                        {constructionFeedback(save, id) || "Ready to build"}
+                      </div>
+                      <small>
+                        {b.hours}h to build ·{" "}
+                        <ResourceAmounts amounts={b.cost} />
+                      </small>
+                      {save.construction
+                        .filter((j) => j.building === id && !j.done)
+                        .map((j) => (
+                          <div className="construction-status" key={j.id}>
+                            <progress
+                              aria-label={b.name + " construction progress"}
+                              value={fraction(j, save.workClock)}
+                              max={1}
+                            />
+                            <span>
+                              {j.start > save.workClock
+                                ? "Queued · starts in " +
+                                  durationLabel(j.start - save.workClock)
+                                : "Building · " +
+                                  durationLabel(j.end - save.workClock) +
+                                  " remaining"}
+                            </span>
+                          </div>
+                        ))}
+                      <button
+                        aria-label={"Build " + b.name.toLowerCase()}
+                        aria-describedby={
+                          "construction-" + id + "-requirements"
+                        }
+                        onClick={() => requestConstruction(id)}
+                        disabled={save.construction.some(
+                          (j) => j.building === id && !j.done,
+                        )}
+                      >
+                        {save.construction.some(
+                          (j) => j.building === id && !j.done,
+                        )
+                          ? save.construction.some(
+                              (j) =>
+                                j.building === id &&
+                                !j.done &&
+                                j.start <= save.workClock,
+                            )
+                            ? "Building"
+                            : "Queued"
+                          : "Build"}
+                      </button>
+                    </article>
+                  ))}
                 </div>
               </aside>
             </div>
@@ -433,7 +473,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   onClick={() =>
                     action(
                       (s) => explore(s, Date.now()),
-                      "You found Stillwater Brook. The valley has more stories to tell.",
+                      "Stillwater Brook charted. Received 15 discovery and 8 herbs.",
                     )
                   }
                 >
@@ -445,15 +485,10 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
               <article className="discovery">
                 <span>A PLACE YOU DISCOVERED</span>
                 <h2>Stillwater Brook</h2>
-                <p>
-                  Silver water, wild herbs, and the remains of an old
-                  waystation. A place for a future connection, supplied by
-                  Greenhaven’s timber and kitchens.
-                </p>
-                <small>
-                  Charted permanently · Regional logistics planned for a later
-                  release
-                </small>
+                <p>Charted. No settlement here yet.</p>
+                <button onClick={() => setTerritory("brook")}>
+                  Visit Stillwater Brook
+                </button>
               </article>
             )}
           </>
@@ -462,14 +497,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
           <section>
             <div className="section-heading">
               <div>
-                <span className="eyebrow">THE WORK OF MANY HANDS</span>
                 <h2>Village workshops</h2>
               </div>
             </div>
-            <p className="subtle">
-              Inputs are reserved when queued. Each workshop holds three jobs,
-              worked in order. You can close the app.
-            </p>
             <div className="objective-grid">
               {Object.entries(save.rules.recipes).map(([id, r]) => (
                 <article
@@ -478,7 +508,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   }
                   key={id}
                 >
-                  <span className="eyebrow">
+                  <span className="recipe-building">
                     {r.building === "hall"
                       ? "Gathering hall"
                       : save.rules.buildings[r.building]?.name}
@@ -509,12 +539,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
               ))}
             </div>
             <h2>On the workbench</h2>
-            {!activeJobs.length && (
-              <p className="empty">
-                The workbenches are quiet. Queue a batch above when you’re
-                ready.
-              </p>
-            )}
+            {!activeJobs.length && <p className="empty">No batches queued.</p>}
             {activeJobs.map((j) => (
               <div className="row" key={j.id}>
                 <span>
@@ -572,19 +597,16 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
           <section>
             <div className="section-heading">
               <div>
-                <span className="eyebrow">THE THINGS THAT TAKE ROOT</span>
                 <h2>Your journal</h2>
               </div>
               <button className="primary" onClick={() => openLogger()}>
                 Record an accomplishment
               </button>
             </div>
-            <p className="subtle">
-              No missed-day penalties. Every earned credential stays with you.
-            </p>
             <div className="habit-grid">
               {(
                 [
+                  "cardio",
                   "gym",
                   "hike",
                   "soccer",
@@ -611,22 +633,24 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 Object.keys(save.credentials).map((k) => (
                   <span key={k}>
                     <Icon name="crest" />{" "}
-                    {activityNames[k.split(":")[0] as Activity]} ·{" "}
-                    {k.split(":")[1] === "weeks3" ? "3 weeks" : k.split(":")[1]}
+                    {k.startsWith("building:") ? (
+                      (save.rules.buildings[k.split(":")[1]]?.name ||
+                        "Building") + " · requirements earned"
+                    ) : (
+                      <>
+                        {activityNames[k.split(":")[0] as Activity]} ·{" "}
+                        {k.split(":")[1] === "weeks3"
+                          ? "3 weeks"
+                          : k.split(":")[1]}
+                      </>
+                    )}
                   </span>
                 ))
               ) : (
-                <p className="subtle">
-                  Your first real accomplishment will put down roots here.
-                </p>
+                <p className="subtle">No milestones earned yet.</p>
               )}
             </div>
             <h2>Recent entries</h2>
-            <p className="subtle">
-              Mistake? Reverse an entry, then log its replacement. Spent rewards
-              are reconciled against future earnings; earned milestones stay
-              permanent.
-            </p>
             {[...save.logs]
               .reverse()
               .slice(0, 40)
@@ -675,16 +699,19 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
           <section>
             <div className="section-heading">
               <div>
-                <span className="eyebrow">A VILLAGE IS ITS PEOPLE</span>
-                <h2>The noticeboard</h2>
+                <h2>Requests</h2>
               </div>
             </div>
-            <div className="objective-grid">
+            <p className="subtle">
+              Optional, one-time exchanges. Delivering spends the listed
+              supplies.
+            </p>
+            <div className="objective-grid request-grid">
               {orders.map((o) => (
                 <article className="objective" key={o.id}>
-                  <span className="eyebrow">VILLAGE COMMISSION</span>
                   <h3>{o.name}</h3>
                   <p>{o.text}</p>
+                  <p className="request-purpose">{o.purpose}</p>
                   <small>
                     Deliver <ResourceAmounts amounts={o.cost} />
                     <br />
@@ -695,7 +722,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                     onClick={() =>
                       action(
                         (s) => fulfill(s, o.id, Date.now()),
-                        "A little kindness goes a long way.",
+                        "Delivered. Received " +
+                          bag(o.reward) +
+                          ". Village detail added.",
                       )
                     }
                   >
@@ -706,11 +735,9 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 </article>
               ))}
               <article className="objective">
-                <span className="eyebrow">THE PASSING MERCHANT</span>
                 <h3>A small exchange</h3>
                 <p>
-                  A few scraps of ore, for a fair price. Trading brings
-                  supplies, never fitness credentials.
+                  Buy ore for forging fittings. Uses gold earned from requests.
                 </p>
                 <small>8 gold → 8 ore · once per local day</small>
                 <button
@@ -731,7 +758,6 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
           <section>
             <div className="section-heading">
               <div>
-                <span className="eyebrow">SET ASIDE FOR TOMORROW</span>
                 <h2>The storehouse</h2>
               </div>
             </div>
@@ -748,24 +774,44 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 </article>
               ))}
             </div>
-            <h2>Slow, steady growth</h2>
+            <button onClick={() => setTab("guide")}>
+              How to get more resources
+            </button>
+            <h2 className="production-heading">Background production</h2>
             <p>
-              Village workers gather {bag(save.rules.passive)} per day
-              {!save.buildings.includes("farm")
-                ? " (food begins after the garden is built)"
-                : ""}
-              . Offline accrual is capped at {save.rules.offlineHours} hours per
-              absence. Nothing decays when life gets busy.
-            </p>
-            <p className="subtle">
-              Momentum and strength accomplishments come from you. Passive
-              supplies cannot open major progression gates.
+              {bag({
+                ...save.rules.passive,
+                ...(!save.buildings.includes("farm") ? { food: 0 } : {}),
+              })}{" "}
+              per day
             </p>
           </section>
         )}
+        {tab === "village" && activeTerritory === "brook" && (
+          <section className="frontier">
+            <div className="frontier-landscape">
+              <img
+                src={landscape}
+                alt="The river and wooded banks at the edge of the valley"
+              />
+            </div>
+            <div className="section-heading">
+              <h2>Stillwater Brook</h2>
+              <span>Charted</span>
+            </div>
+            <p>
+              A river crossing beyond the willow bend. No settlement here yet.
+            </p>
+            <button onClick={() => setTerritory("greenhaven")}>
+              Return to Greenhaven
+            </button>
+          </section>
+        )}
+        {tab === "guide" && (
+          <Guide save={save} onLog={openLogger} onNavigate={setTab} />
+        )}
         {tab === "settings" && (
           <section className="settings">
-            <span className="eyebrow">YOUR WORLD, IN YOUR HANDS</span>
             <h2>Save & settings</h2>
             <p>
               {accountsEnabled
@@ -779,7 +825,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   onClick={() =>
                     download(
                       migrationBackup()!,
-                      "living-world-before-timed-work.json",
+                      "living-world-before-village-update.json",
                     )
                   }
                 >
@@ -827,48 +873,8 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 Restore local backup
               </button>
             </div>
-            <p className="subtle">
-              On iPhone: open in Safari, then Share → Add to Home Screen. The
-              first visit needs a connection; the installed shell is cached for
-              offline use.
-            </p>
-            <h2>Personal goals</h2>
-            <p>
-              For the next hall, choose three gym sessions (or three consecutive
-              gym weeks), or a deliberate home-strength consistency alternative.
-              This changes future requirements without deleting achievements.
-            </p>
-            <select
-              aria-label="Strength goal"
-              value={save.rules.strengthMode}
-              onChange={(e) => {
-                const mode = e.target.value as "gym" | "home";
-                commit((s) => {
-                  backup();
-                  applyRules(s, {
-                    ...s.rules,
-                    strengthMode: mode,
-                    strengthCount: mode === "home" ? 21 : 3,
-                    buildings: {
-                      ...s.rules.buildings,
-                      blacksmith: {
-                        ...s.rules.buildings.blacksmith,
-                        goals: mode === "home" ? { pushups: 7 } : { gym: 1 },
-                      },
-                    },
-                  });
-                });
-              }}
-            >
-              <option value="gym">Gym attendance</option>
-              <option value="home">Home strength · 21 qualifying days</option>
-            </select>
-            <p className="subtle">
-              Short walks have their own path. They don’t silently become hikes.
-              Home strength substitutes only when you deliberately select it
-              here.
-            </p>
-            <h2>Workshop behind the curtain</h2>
+            <button onClick={() => setTab("guide")}>Open game guide</button>
+            <h2>Developer console</h2>
             <p>
               Developer tools affect this device only. They include balance
               rules, diagnostics, and optional spoilers. This gate prevents
@@ -1055,12 +1061,11 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
           </section>
         )}
         <footer>
-          <span>Progress takes root. It never disappears.</span>
           <small>
             {storageError
               ? "Save needs attention"
               : `On-device save · ${saved || "active"}`}{" "}
-            · v0.4
+            · v0.5
           </small>
         </footer>
       </main>
@@ -1071,6 +1076,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
           ["requests", "requests", "Requests"],
           ["journal", "journal", "Journal"],
           ["stores", "stores", "Stores"],
+          ["guide", "guide", "Guide"],
         ].map(([id, icon, name]) => (
           <button
             key={id}
@@ -1107,12 +1113,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
             >
               ×
             </button>
-            <span className="eyebrow">SOMETHING GOOD, MADE REAL</span>
-            <h2 id="log-title">A little effort. Lasting roots.</h2>
-            <p>
-              Log something you actually completed. Rest days never cost you
-              progress.
-            </p>
+            <h2 id="log-title">Record an accomplishment</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -1190,7 +1191,7 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                   value={notes}
                   maxLength={500}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="A moment to remember…"
+                  placeholder="Optional details"
                 />
               </label>
               <p className="log-rule">
@@ -1201,16 +1202,17 @@ function App({ accountControl }: { accountControl: React.ReactNode }) {
                 Rewards up to {save.rules.activities[type].cap} times per local
                 day. {bag(save.rules.activities[type].reward)} gathered over{" "}
                 {save.rules.activities[type].gatherHours} hours, starting when
-                logged. Each resource has its own queue.
+                logged.
               </p>
               <button className="primary" type="submit">
-                Let it grow <Icon name="arrow" className="action-arrow" />
+                Record accomplishment{" "}
+                <Icon name="arrow" className="action-arrow" />
               </button>
             </form>
           </section>
         </div>
       )}
-    </>
+    </div>
   );
 }
 function localTime() {

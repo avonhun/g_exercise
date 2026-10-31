@@ -40,3 +40,28 @@ for (const size of [192, 512]) {
     .png()
     .toFile(`public/icon-${size}.png`);
 }
+
+// Village growth and character animation are generated source masters, exported
+// at stable grid boundaries. The runtime does not use any image service.
+for (const [i, name] of [
+  "cottage",
+  "carpenter",
+  "produce",
+  "bakery",
+  "well",
+  "tool-stall",
+].entries())
+  await sharp("art/source/neighborhoods.png")
+    .extract({
+      left: (i % 3) * 512,
+      top: Math.floor(i / 3) * 512,
+      width: 512,
+      height: 512,
+    })
+    .resize(256)
+    .webp({ quality: 90, alphaQuality: 100 })
+    .toFile(`src/assets/${name}.webp`);
+await sharp("art/source/townsfolk.png")
+  .resize(1024, 1024)
+  .webp({ quality: 90, alphaQuality: 100 })
+  .toFile("src/assets/townsfolk.webp");

@@ -9,7 +9,7 @@ test("real registration, cookie session, private sync, guest migration and cross
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await page.getByRole("button", { name: "Record an accomplishment" }).click();
-  await page.getByRole("button", { name: "Let it grow" }).click();
+  await page.getByRole("button", { name: "Record accomplishment" }).click();
   await page.getByRole("button", { name: "Dismiss message" }).click();
   await page.getByRole("button", { name: "Open account" }).click();
   await page
