@@ -20,7 +20,7 @@ npm run dev -- --port 5173
 
 ## Playable now
 
-- Detailed isometric landscape, smaller building sprites, surrounding shops and homes, painted animated workers, walking residents, and six navigation views. Timber/parchment/forest UI with a distinct palette for an already-discovered frontier. See [VILLAGE_UPDATE.md](VILLAGE_UPDATE.md) for the current preview.
+- Detailed isometric landscape, smaller building sprites, surrounding shops and homes, painted animated workers, walking residents, and six navigation views. Timber/parchment/forest UI with a distinct palette for an already-discovered frontier. See [VILLAGE_UPDATE.md](VILLAGE_UPDATE.md) for the 0.5 update.
 - Manual, dated optional weightlifting, soccer, hike, cardio, cycling, short walk, pushup, meal, plants, and mindful snack logs. Duration/repetitions, notes, daily reward caps, stable event IDs, corrections, and visible history.
 - Small walks and nightly pushups count as useful habits. They do not automatically count as hikes or cardio. Lifting contributes ore without becoming a construction requirement.
 - Sawmill, forge, garden, kitchen, hall upgrade; four recipes with serial three-job workshop queues; capped passive gathering; offline job completion.

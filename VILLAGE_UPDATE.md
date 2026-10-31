@@ -1,6 +1,6 @@
-# Village update · 0.5 (preview)
+# Village update · 0.5
 
-This update is prepared for review. It has not been deployed.
+Production release uses the existing GitHub `main` → Vercel `world-pwa` connection. Publishing does not replace browser saves.
 
 ## Town presentation
 
@@ -36,4 +36,4 @@ When loading an older browser save, `store.load` archives its untouched original
 
 ## Review boundaries
 
-Browser verification uses Chromium at phone and desktop dimensions. Actual iPhone Safari/Home Screen behavior still needs device review. This revision does not enable accounts, create hosting resources, or publish to production.
+Browser verification uses Chromium at phone and desktop dimensions. Actual iPhone Safari/Home Screen behavior still needs device review. This revision does not enable accounts or create hosting resources. Production uses the existing static Vercel site.
